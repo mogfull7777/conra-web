@@ -10,7 +10,13 @@ const cors = require("cors");
 const { User } = require("./models/userlist");
 
 // application/x-www-form-urlencoded
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000", // 클라이언트의 호스트 주소
+    credentials: true, // 쿠키를 다루기 위해 필요
+    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+  })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // application/json
@@ -71,10 +77,13 @@ app.post("/api/users/login", async (req, res) => {
     const token = await user.generateToken();
     // !!!!!!!!!!!여기서 잘못된듯!!!!! tokenInCookies: token을 활용하자!
     // 토큰을 저장한다. 어디에? 쿠키, 로컬스토리지 등에 저장 가능. (여기선 쿠키)
-    res
-      .cookie("user_auth", token)
-      .status(200)
-      .json({ loginSuccess: true, userId: user._id, tokenInCookies: token });
+    res.cookie("user_auth", token).status(200).json({
+      loginSuccess: true,
+      userId: user._id,
+      tokenInCookies: token,
+      name: user.name,
+      email: user.email,
+    });
     console.log("Token from cookie:", token);
   } catch (err) {
     res.status(400).send(err);
@@ -104,15 +113,25 @@ app.get("/api/users/auth", auth, (req, res) => {
   }
 });
 
-// 로그아웃
+// ________로그아웃
 
 app.get("/api/users/logout", auth, async (req, res) => {
   try {
     await User.findOneAndUpdate({ _id: req.user._id }, { token: "" });
+
+    // 쿠키에서 토큰을 제거
+    res.cookie("user_auth", "", {
+      httpOnly: true, // JS를 통한 접근 방지
+      expires: new Date(0), // 쿠키 만료 날짜를 과거로 설정
+      secure: process.env.NODE_ENV === "production", // 프로덕션 환경에서만 secure 쿠키 사용
+    });
+
+    // 성공 응답 전송
     res.status(200).send({
       success: true,
     });
   } catch (error) {
+    // 오류 처리 및 오류 응답 전송
     res.status(400).json({ success: false, error: "로그아웃에 실패했습니다." });
     console.log("로그아웃에 실패했습니다.", error);
   }

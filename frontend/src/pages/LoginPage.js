@@ -2,6 +2,7 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import * as S from "./mainPageCss";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUser } from "../UserContext";
 
 const LOGIN_OPTION = ["사업자 로그인", "고객 로그인", "비회원 로그인"];
 const LOGIN_SERVER_URL = "http://localhost:5000/api/users/login";
@@ -9,10 +10,13 @@ const LOGIN_SERVER_URL = "http://localhost:5000/api/users/login";
 function LoginPage() {
   // 상수
 
+  const { setUser } = useUser();
   const id = useId();
   const navi = useNavigate();
   const [loginIdentity, setLoginIdentity] = useState(`고객 로그인`);
-  const [userLogin, setUserLogin] = useState(null);
+  const contractAdminHandle = () => {
+    navi("/admin");
+  };
 
   // navi
 
@@ -28,11 +32,37 @@ function LoginPage() {
   const notIdentityRefPhone = useRef(null);
   const loginHelpSectionRef = useRef(null);
 
-  // 로그인 정보 가져오기
+  // 로그인 정보 보내기
 
-  const fetchData = async () => {
-    const responseData = await axios.post(LOGIN_SERVER_URL);
-    setUserLogin(responseData.data);
+  const loginSubmitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      // 사용자 입력으로부터 이메일과 비밀번호 가져오기.
+      const email = identityRefEmail.current.value;
+      const password = identityRefPassword.current.value;
+
+      // 로그인 요청 보내기
+      const response = await axios.post(
+        LOGIN_SERVER_URL,
+        { email, password },
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("userEmail :", email, "userPassword :", password);
+      console.log("Login Response: ", response.data);
+
+      // 성공적으로 응답을 받았을 때, 유저 데이터 설정
+      if (response.data) {
+        setUser(response.data);
+        alert("로그인 성공!!!");
+        contractAdminHandle();
+      }
+    } catch (err) {
+      console.log("error : ", err);
+      alert("로그인 실패");
+    }
   };
 
   // 로그인 방식 설정
@@ -53,27 +83,7 @@ function LoginPage() {
     loginHelpSectionRef.current.style.visibility = isMemberLogin
       ? "visible"
       : "hidden";
-
-    fetchData();
   }, [loginIdentity]);
-
-  // 로그인 정보 보내기
-
-  const loginSubmitHandler = async (e) => {
-    e.preventDefault();
-    try {
-      const email = identityRefEmail.current.value;
-      const password = identityRefPassword.current.value;
-      const response = await axios.post(LOGIN_SERVER_URL, { email, password });
-      console.log("userEmail :", email, "userPassword :", password);
-      console.log("Login Response: ", response.data);
-      console.log("userLogin :", userLogin);
-      fetchData();
-      alert("로그인 성공!!!");
-    } catch (err) {
-      console.log("error : ", err);
-    }
-  };
 
   return (
     <div>

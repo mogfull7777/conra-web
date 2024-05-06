@@ -6,16 +6,19 @@ import LoginPage from "./pages/LoginPage";
 import AdminMain from "./pages/admin-pages/AdminMain";
 import ClientMain from "./pages/client-pages/ClientMain";
 import SignupPage from "./pages/SignupPage";
+import { UserProvider } from "./UserContext";
 
 function App() {
   return (
-    <Routes>
-      <Route index element={<Main />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/admin" element={<AdminMain />} />
-      <Route path="/client" element={<ClientMain />} />
-    </Routes>
+    <UserProvider>
+      <Routes>
+        <Route index element={<Main />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/admin" element={<AdminMain />} />
+        <Route path="/client" element={<ClientMain />} />
+      </Routes>
+    </UserProvider>
   );
 }
 
