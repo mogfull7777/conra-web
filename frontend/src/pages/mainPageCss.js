@@ -88,6 +88,7 @@ export const InputArea = styled.input`
   padding: 1.25rem;
   font-size: 1.25rem;
   margin-bottom: 1rem;
+
   outline: none;
   &::placeholder {
     color: #ffffff;
@@ -186,4 +187,23 @@ export const SignupLoginBtn = styled.span`
 
 export const SignupLine = styled.hr`
   margin: 1.5rem 0;
+`;
+
+export const SignupIdentity = styled.ul`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.7rem;
+
+  & :last-child {
+    border-right: none;
+  }
+`;
+
+export const SignupIdentityList = styled.li`
+  width: calc(100% / 2);
+  color: #d9d9d9;
+  box-sizing: border-box;
+  border-right: 0.063rem solid #d9d9d9;
+  cursor: pointer;
+  text-align: center;
 `;

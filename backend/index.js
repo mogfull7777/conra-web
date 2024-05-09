@@ -37,16 +37,17 @@ app.post("/api/users/register", async (req, res) => {
   // 회원 가입 시 필요한 정보를 client에서 가져오면
   // 그것들을 데이터 베이스에 넣어준다.
 
-  // body parser를 통해 body에 담긴 정보를 가져온다.
-  const user = new User(req.body);
-
   // mongoDB 메서드, user모델에 저장.
 
   try {
+    // body parser를 통해 body에 담긴 정보를 가져온다.
+    const user = new User(req.body);
     await user.save();
     res.status(200).json({ success: true });
   } catch (err) {
-    res.status(500).json({ success: false, err });
+    console.error("회원가입 오류 :", err);
+    res.status(500).json({ success: false, err: err.message });
+    return;
   }
 });
 
@@ -56,7 +57,7 @@ app.post("/api/users/login", async (req, res) => {
     // 1. 요청된 이메일을 데이터베이스에서 있는지 찾는다.
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return res.json({
+      return res.status(401).json({
         loginSuccess: false,
         message: "제공된 이메일에 해당하는 유저가 없습니다.",
       });
@@ -66,10 +67,9 @@ app.post("/api/users/login", async (req, res) => {
     const isMatch = await user.comparePassword(req.body.password);
 
     if (!isMatch) {
-      return res.json({
+      return res.status(401).json({
         loginSuccess: false,
         message: "비밀번호가 틀렸습니다.",
-        // error: error,
       });
     }
 
@@ -77,12 +77,14 @@ app.post("/api/users/login", async (req, res) => {
     const token = await user.generateToken();
     // !!!!!!!!!!!여기서 잘못된듯!!!!! tokenInCookies: token을 활용하자!
     // 토큰을 저장한다. 어디에? 쿠키, 로컬스토리지 등에 저장 가능. (여기선 쿠키)
-    res.cookie("user_auth", token).status(200).json({
+    res.cookie("user_auth", token, { httpOnly: true }).status(200).json({
       loginSuccess: true,
       userId: user._id,
       tokenInCookies: token,
       name: user.name,
       email: user.email,
+      password: user.password,
+      role: user.role,
     });
     console.log("Token from cookie:", token);
   } catch (err) {

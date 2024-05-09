@@ -1,7 +1,9 @@
 import axios from "axios";
-import React, { useId, useRef } from "react";
+import React, { useId, useRef, useState } from "react";
 import * as S from "./mainPageCss";
 import { useNavigate } from "react-router-dom";
+
+const SIGNUP_OPTION = ["사업자 회원가입", "고객 회원가입"];
 const SIGNUP_SERVER_URL = "http://localhost:5000/api/users/register";
 
 function SignupPage() {
@@ -14,12 +16,14 @@ function SignupPage() {
 
   // 필요한 정보들
 
+  const [signupIdentity, setSignupIdentity] = useState("사업자 회원가입");
+
   const identityRefName = useRef(null);
   const identityRefEmail = useRef(null);
   const IdentityRefPhone = useRef(null);
   const identityRefPassword = useRef(null);
-  const identityRefPasswordChack = useRef(null);
-  const identityRefChackBox = useRef(false);
+  const identityRefPasswordCheck = useRef(null);
+  const identityRefCheckBox = useRef(false);
 
   // 회원정보 db에 보내기
 
@@ -30,17 +34,18 @@ function SignupPage() {
     const email = identityRefEmail.current.value;
     const phone = IdentityRefPhone.current.value;
     const password = identityRefPassword.current.value;
-    const passwordChack = identityRefPassword.current.value;
-    const privacyChack = identityRefChackBox.current.checked;
+    const passwordCheck = identityRefPasswordCheck.current.value;
+    const privacyCheck = identityRefCheckBox.current.checked;
 
-    if (password !== passwordChack) {
+    // 회원가입 유형에 따른 role 설정
+    const role = signupIdentity === "사업자 회원가입" ? 0 : 1;
+
+    // 비밀번호와 이용약관 브레이크
+    if (password !== passwordCheck) {
       alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
       return;
-    } else if (identityRefChackBox.current.checked !== true) {
+    } else if (privacyCheck !== true) {
       alert("이용약관 및 개인정보 보호정책에 동의해주세요.");
-      return;
-    } else if (name === "") {
-      alert("이름을 입력해주세요.");
       return;
     }
     try {
@@ -49,8 +54,13 @@ function SignupPage() {
         email,
         phone,
         password,
-        privacyChack,
+        role,
+        privacyCheck,
       });
+
+      console.log("password :", password);
+      console.log("passwordChack :", passwordCheck);
+
       alert("회원가입이 완료되었습니다!");
       loginHandle();
       console.log("response :", response);
@@ -59,10 +69,31 @@ function SignupPage() {
     }
   };
 
+  // 회원가입 방식 설정
+
+  const handleOptionClick = (option) => {
+    setSignupIdentity(option);
+    console.log("Selected option:", option);
+  };
+
   return (
     <S.Wrapper>
       <S.SignupSection>
         <S.InputSettion onSubmit={signupSubmitHandler}>
+          <S.SignupIdentity>
+            {SIGNUP_OPTION.map((option, index) => (
+              <S.SignupIdentityList
+                key={`${id}-userDivison-${index}`}
+                id={`${id}-userDivison-${index}`}
+                style={{
+                  color: signupIdentity === option ? "#353535" : "#d9d9d9",
+                }}
+                onClick={() => handleOptionClick(option)}
+              >
+                {option}
+              </S.SignupIdentityList>
+            ))}
+          </S.SignupIdentity>
           <S.InputArea
             id={`${id}-userName`}
             ref={identityRefName}
@@ -93,13 +124,13 @@ function SignupPage() {
           />
           <S.InputArea
             id={`${id}-passwordCheck`}
-            ref={identityRefPasswordChack}
+            ref={identityRefPasswordCheck}
             type="password"
             placeholder="비밀번호를 한번 더 입력해주세요."
           />
           <S.LoginMaintainChack
             id={`${id}-checkBox`}
-            ref={identityRefChackBox}
+            ref={identityRefCheckBox}
             type="checkbox"
           />
           <label>이용약관 및 개인정보 보호정책에 동의하십니까?</label>
