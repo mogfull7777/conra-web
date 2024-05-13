@@ -34,6 +34,10 @@ function LoginPage() {
     navi("/admin");
   };
 
+  const contractClientHandle = () => {
+    navi("/client");
+  };
+
   // 로그인 정보 보내기
 
   const loginSubmitHandler = async (e) => {
@@ -59,6 +63,8 @@ function LoginPage() {
       console.log("role :", response.data.role);
 
       // 성공적으로 응답을 받았을 때, 유저 데이터 설정
+
+      // 고객 로그인, 사업자 로그인 구분
       if (
         (response.data.role !== 0 && loginIdentity === "사업자 로그인") ||
         (response.data.role !== 1 && loginIdentity === "고객 로그인")
@@ -72,11 +78,32 @@ function LoginPage() {
         );
         alert("사업자 및 고객 로그인 선택을 확인해주세요.");
         return;
-      } else {
+      } else if (loginIdentity === "비회원 로그인") {
+        await axios.get(
+          "http://localhost:5000/api/users/logout", // 로그아웃 엔드포인트
+          {
+            withCredentials: true,
+          },
+          console.log("비회원 로그인은 아직 개발 전입니다.")
+        );
+        alert("사업자 및 고객 로그인 선택을 확인해주세요.");
+        return;
+      } else if (
+        response.data.role === 0 &&
+        loginIdentity === "사업자 로그인"
+      ) {
         if (response.data.loginSuccess) {
           setUser(response.data);
-          alert("로그인 성공!!!");
+          alert("사업자 로그인 성공!!!");
           contractAdminHandle();
+        } else {
+          alert(response.data.message);
+        }
+      } else if (response.data.role === 1 && loginIdentity === "고객 로그인") {
+        if (response.data.loginSuccess) {
+          setUser(response.data);
+          alert("고객 로그인 성공!!!");
+          contractClientHandle();
         } else {
           alert(response.data.message);
         }

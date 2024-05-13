@@ -2,6 +2,7 @@ import React from "react";
 import { useUser } from "../../UserContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import * as AC from "./AdminPageCss";
 
 function Admin_main() {
   const { user } = useUser();
@@ -32,19 +33,25 @@ function Admin_main() {
   };
 
   return (
-    <form onSubmit={logoutHandler}>
-      <div>
-        {user && (
-          <>
-            <p>UserID: {user.userId}</p>
-            <p>Token: {user.tokenInCookies}</p>
-            <p>name: {user.name}</p>
-            <p>email: {user.email}</p>
-          </>
-        )}
-        <button type="submit">로그아웃</button>
-      </div>
-    </form>
+    <AC.Wrapper>
+      <h1>환영합니다 {user.name}님!</h1>
+      <form onSubmit={logoutHandler}>
+        <div>
+          {user && (
+            <>
+              <p>UserID: {user.userId}</p>
+              <p>Token: {user.tokenInCookies}</p>
+              <p>name: {user.name}</p>
+              <p>email: {user.email}</p>
+            </>
+          )}
+          <button type="submit">로그아웃</button>
+        </div>
+      </form>
+      <AC.ContractBtn onClick={() => navi("/admin/contract")}>
+        계약서 작성하기
+      </AC.ContractBtn>
+    </AC.Wrapper>
   );
 }
 

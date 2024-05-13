@@ -7,6 +7,7 @@ import AdminMain from "./pages/admin-pages/AdminMain";
 import ClientMain from "./pages/client-pages/ClientMain";
 import SignupPage from "./pages/SignupPage";
 import { UserProvider } from "./UserContext";
+import AdminContract1 from "./pages/admin-pages/AdminContract1";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/admin" element={<AdminMain />} />
         <Route path="/client" element={<ClientMain />} />
+        <Route path="/admin/contract" element={<AdminContract1 />} />
       </Routes>
     </UserProvider>
   );
