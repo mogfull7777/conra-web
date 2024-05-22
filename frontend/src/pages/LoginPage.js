@@ -10,7 +10,7 @@ const LOGIN_SERVER_URL = "http://localhost:5000/api/users/login";
 function LoginPage() {
   // 상수
 
-  const { setUser } = useUser();
+  const { saveUser } = useUser();
   const id = useId();
   const navi = useNavigate();
   const [loginIdentity, setLoginIdentity] = useState(`고객 로그인`);
@@ -63,7 +63,6 @@ function LoginPage() {
       console.log("role :", response.data.role);
 
       // 성공적으로 응답을 받았을 때, 유저 데이터 설정
-
       // 고객 로그인, 사업자 로그인 구분
       if (
         (response.data.role !== 0 && loginIdentity === "사업자 로그인") ||
@@ -93,7 +92,7 @@ function LoginPage() {
         loginIdentity === "사업자 로그인"
       ) {
         if (response.data.loginSuccess) {
-          setUser(response.data);
+          saveUser(response.data);
           alert("사업자 로그인 성공!!!");
           contractAdminHandle();
         } else {
@@ -101,7 +100,7 @@ function LoginPage() {
         }
       } else if (response.data.role === 1 && loginIdentity === "고객 로그인") {
         if (response.data.loginSuccess) {
-          setUser(response.data);
+          saveUser(response.data);
           alert("고객 로그인 성공!!!");
           contractClientHandle();
         } else {

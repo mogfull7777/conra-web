@@ -1,12 +1,14 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
+import { UserProvider } from "./UserContext";
+
+// page 라우팅
 import Main from "./pages/Main";
 import LoginPage from "./pages/LoginPage";
 import AdminMain from "./pages/admin-pages/AdminMain";
 import ClientMain from "./pages/client-pages/ClientMain";
 import SignupPage from "./pages/SignupPage";
-import { UserProvider } from "./UserContext";
 import AdminContract1 from "./pages/admin-pages/AdminContract1";
 
 function App() {
