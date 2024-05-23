@@ -115,6 +115,30 @@ app.get("/api/users/auth", auth, (req, res) => {
   }
 });
 
+// ________문서 저장 시
+app.post("/api/users/saveContract", auth, async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user._id });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "사용자를 찾을 수 없습니다." });
+    }
+
+    // 사용자 문서 저장 로직
+    user.documents = user.documents || []; // documents 필드가 없을 경우 초기화
+    user.documents.push(req.body.document);
+
+    await user.save();
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error("문서 저장 실패 :", err);
+    res
+      .status(500)
+      .json({ success: false, error: "문서 저장에 실패했습니다." });
+  }
+});
+
 // ________로그아웃
 
 app.get("/api/users/logout", auth, async (req, res) => {

@@ -4,9 +4,12 @@ import Cookies from "js-cookie";
 import * as AC from "./AdminPageCss";
 import { jsPDF } from "jspdf";
 import { pdffont } from "../PdfFont"; // pdf 폰트 인코딩 파일
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function AdminContract1() {
   const { user, saveUser, logoutUser } = useUser();
+  const navi = useNavigate();
 
   const [contractText, setContractText] = useState("");
   const [countMenu, setCountMenu] = useState(1);
@@ -78,6 +81,26 @@ function AdminContract1() {
     window.location.reload(); // 페이지를 새로 고침하여 원래 상태로 복원
   };
 
+  // 문서 유저 데이터에 저장
+  const saveDocument = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/users/saveContract",
+        { document: contractText },
+        { withCredentials: true }
+      );
+      if (response.data.success) {
+        alert("문서가 저장되었습니다.");
+        navi("/admin");
+      } else {
+        alert("문서 저장에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("문서 저장 실패: ", err);
+      alert("문서 저장에 실패했습니다.");
+    }
+  };
+
   // 만들어진 항을 오른쪽으로 보내는 함수
   const contractSubmit = (e) => {
     e.preventDefault();
@@ -132,6 +155,7 @@ function AdminContract1() {
           </div>
           <button onClick={savePdf}>PDF로 저장</button>
           <button onClick={printContent}>프린트</button>
+          <button onClick={saveDocument}>저장</button>
         </AC.ContractView>
       </AC.Wrapper>
     </>
@@ -146,4 +170,4 @@ export default AdminContract1;
 // 4. 싸인 관련 설계하기.
 
 // essue
-// 1. 새로고침하면 user.name을 읽을 수 없다고 뜸
+// 1. 새로고침하면 user.name을 읽을 수 없다고 뜸 <해결>
