@@ -3,14 +3,14 @@ import * as S from "./mainPageCss";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../UserContext";
 
-const LOGIN_OPTION = ["사업자 로그인", "고객 로그인", "비회원 로그인"];
+const LOGIN_OPTION = ["사업자 로그인", "고객 로그인"];
 
 function LoginPage() {
   // 상수
 
   const { loginUser } = useUser();
   const id = useId();
-  const [loginIdentity, setLoginIdentity] = useState(`고객 로그인`);
+  const [loginIdentity, setLoginIdentity] = useState(`사업자 로그인`);
 
   const navi = useNavigate();
 
@@ -18,8 +18,6 @@ function LoginPage() {
 
   const identityRefEmail = useRef(null);
   const identityRefPassword = useRef(null);
-  const notIdentityRefNumber = useRef(null);
-  const notIdentityRefPhone = useRef(null);
 
   const loginHelpSectionRef = useRef(null);
 
@@ -53,48 +51,24 @@ function LoginPage() {
             ))}
           </S.LoginIdentity>
           <S.InputSettion onSubmit={loginSubmitHandler}>
-            {loginIdentity !== "비회원 로그인" ? (
-              <>
-                <S.InputArea
-                  id={`${id}-email`}
-                  type="text"
-                  ref={identityRefEmail}
-                  placeholder="이메일을 입력해주세요."
-                />
-                <S.InputArea
-                  id={`${id}-password`}
-                  type="password"
-                  ref={identityRefPassword}
-                  placeholder="비밀번호를 입력해주세요."
-                />
-              </>
-            ) : (
-              <>
-                <S.InputArea
-                  id={`${id}-number`}
-                  type="password"
-                  ref={notIdentityRefNumber}
-                  placeholder="전달받은 번호를 입력해주세요."
-                />
-                <S.InputArea
-                  id={`${id}-phone`}
-                  type="number"
-                  ref={notIdentityRefPhone}
-                  placeholder="전화번호를 입력해주세요."
-                />
-              </>
-            )}
+            <>
+              <S.InputArea
+                id={`${id}-email`}
+                type="text"
+                ref={identityRefEmail}
+                placeholder="이메일을 입력해주세요."
+              />
+              <S.InputArea
+                id={`${id}-password`}
+                type="password"
+                ref={identityRefPassword}
+                placeholder="비밀번호를 입력해주세요."
+              />
+            </>
+
             <S.LoginBtn type="submit">로그인</S.LoginBtn>
           </S.InputSettion>
-          <S.LoginHelpSection
-            ref={loginHelpSectionRef}
-            style={{
-              opacity: loginIdentity !== "비회원 로그인" ? 1 : 0,
-              visibility:
-                loginIdentity !== "비회원 로그인" ? "visible" : "hidden",
-              transition: "opacity 0.3s, visibility 0.3s",
-            }}
-          >
+          <S.LoginHelpSection ref={loginHelpSectionRef}>
             <S.LoginMaintain>
               <S.LoginMaintainChack id={`${id}-checkbox`} type="checkbox" />
               <label htmlFor={`${id}-checkbox`}>로그인 상태 유지</label>

@@ -66,7 +66,7 @@ export const LoginIdentity = styled.ul`
 `;
 
 export const LoginIdentityList = styled.li`
-  width: calc(100% / 3);
+  width: calc(100% / 2);
   color: #d9d9d9;
   box-sizing: border-box;
   border-right: 0.063rem solid #d9d9d9;

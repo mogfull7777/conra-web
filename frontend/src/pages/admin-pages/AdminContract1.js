@@ -14,32 +14,52 @@ function AdminContract1() {
   const [contractText, setContractText] = useState("");
   const [countMenu, setCountMenu] = useState(1);
 
+  // 입력 영역 - 타이틀
+  const contractTitle = useRef("");
+  const contractClientName = useRef("");
+  const contractAdminName = useRef("");
+  const contractContent = useRef("");
+
+  // 입력 영역 - 내용
   const contractDescription = useRef("");
   const contractName = useRef("");
+
+  // 문서 영역
   const contractPage = useRef("");
 
+  // ____토큰을 사용하여 유저 정보를 가져오고 저장.
   useEffect(() => {
-    // 토큰을 사용하여 유저 정보를 가져오고 저장.
     const token = Cookies.get("user_auth");
-    if (token) {
+    const storedUser = localStorage.getItem("user");
+
+    if (token && storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      saveUser(parsedUser);
+      console.log("storedUser from localStorage:", parsedUser);
+    } else if (token) {
       fetchUserFromToken(token).then((fetchedUser) => {
         saveUser(fetchedUser);
+        console.log("fetchedUser from token:", fetchedUser);
       });
     }
   }, [saveUser]);
 
+  useEffect(() => {
+    console.log("user state:", user);
+  }, [user]);
+
+  // ____서버에서 토큰을 사용하여 유저 정보를 가져오는 함수
   const fetchUserFromToken = async (token) => {
-    // 서버에서 토큰을 사용하여 유저 정보를 가져오는 함수
-    const response = await fetch("/api/user", {
+    const response = await axios.get("/api/users/auth", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      withCredentials: true,
     });
-    const data = await response.json();
-    return data;
+    return response.data;
   };
 
-  // pdf 프린트 기능.
+  // ____pdf 프린트 기능.
   const savePdf = () => {
     const doc = new jsPDF({
       orientation: "p", // "p"는 세로(portrait), "l"은 가로(landscape)
@@ -63,7 +83,7 @@ function AdminContract1() {
     doc.save("contract.pdf");
   };
 
-  // 프린트 버튼 로직 연결
+  // ____프린트 버튼 로직 연결
   const printContent = () => {
     const printableArea = document.getElementById("printableArea");
     if (!printableArea) {
@@ -81,7 +101,7 @@ function AdminContract1() {
     window.location.reload(); // 페이지를 새로 고침하여 원래 상태로 복원
   };
 
-  // 문서 유저 데이터에 저장
+  // ____문서 유저 데이터에 저장
   const saveDocument = async () => {
     try {
       const response = await axios.post(
@@ -121,8 +141,8 @@ function AdminContract1() {
     }
   };
 
-  if (!user) {
-    return <div>Loading...</div>;
+  if (!user && !localStorage.getItem("user")) {
+    return <div>로그인이 필요합니다.</div>;
   }
 
   return (
@@ -139,18 +159,44 @@ function AdminContract1() {
           </ul>
         </AC.StepMenu>
         <AC.ContractTyping>
-          <div>
-            <form onSubmit={contractSubmit}>
-              제 {countMenu} 항
+          <form onSubmit={contractSubmit}>
+            <AC.ContentNameText>
+              <input
+                ref={contractTitle}
+                placeholder="계약서 제목을 입력해주세요."
+              />
+            </AC.ContentNameText>
+            <AC.ContractTitle>
+              <AC.ContractContentText>
+                <AC.ContractContentinput
+                  ref={contractClientName}
+                  placeholder="발주처의 이름을 입력해주세요."
+                />
+                <span>(이하 "발주처라 함")과 </span>
+                <AC.ContractContentinput
+                  ref={contractAdminName}
+                  placeholder="수주처의 이름을 입력해주세요."
+                />
+                <span>(이하 "수주처"라 함)은</span>
+                <AC.ContractContentinput
+                  ref={contractContent}
+                  placeholder="계약 제목을 입력해주세요."
+                />
+                <p>{contractTitle.current.value}</p>
+                <span>와 관련한 계약을 다름과 같이 체결한다.</span>
+              </AC.ContractContentText>
+            </AC.ContractTitle>
+            <AC.ContractContent>
+              <h4>제 {countMenu} 항</h4>
               <input ref={contractName} placeholder="항목 이름" />
               <textarea ref={contractDescription} placeholder="내용" />
               <button type="submit">항 추가</button>
-            </form>
-          </div>
+            </AC.ContractContent>
+          </form>
         </AC.ContractTyping>
         <AC.ContractView id="printableArea">
           <div ref={contractPage}>
-            <h2>문서 영역</h2>
+            <h2>위탁계약서</h2>
             <pre>{contractText}</pre>
           </div>
           <button onClick={savePdf}>PDF로 저장</button>

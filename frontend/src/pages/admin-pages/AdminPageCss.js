@@ -100,3 +100,22 @@ export const ContractView = styled.main`
   grid-area: page;
   background-color: blue;
 `;
+
+export const ContractTitle = styled.article`
+  display: flex;
+  word-break: keep-all;
+`;
+
+export const ContractContent = styled.article`
+  display: flex;
+`;
+
+export const ContractContentText = styled.div`
+  display: flex;
+`;
+export const ContentNameText = styled.div``;
+
+export const ContractContentinput = styled.input`
+  width: 5rem;
+  height: 1.2rem;
+`;
