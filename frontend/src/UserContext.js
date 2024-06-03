@@ -10,6 +10,7 @@ const UserContext = createContext(null);
 export const UserProvider = ({ children }) => {
   const initialUser = JSON.parse(localStorage.getItem("user"));
   const [user, setUser] = useState(initialUser);
+  const [contractText, setContractText] = useState("");
   const navi = useNavigate();
 
   // 로그인 함수
@@ -103,8 +104,20 @@ export const UserProvider = ({ children }) => {
       });
   };
 
+  // console.log("contractText :", contractText);
+  // console.log("setContractText :", setContractText);
+
   return (
-    <UserContext.Provider value={{ user, saveUser, loginUser, logoutUser }}>
+    <UserContext.Provider
+      value={{
+        user,
+        saveUser,
+        loginUser,
+        logoutUser,
+        contractText,
+        setContractText,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

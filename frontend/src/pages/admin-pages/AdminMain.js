@@ -32,41 +32,49 @@ function Admin_main() {
     }
   };
 
-  return (
-    <AC.Wrapper>
-      <AC.Menu>
-        <AC.User>
-          <h1>환영합니다 {user.name}님!</h1>
-        </AC.User>
-        <AC.Gnav>
-          <form onSubmit={logoutHandler}>
-            <ul>
-              <li>계약서 관리</li>
-              <li>저장된 양식</li>
-            </ul>
-            {/* <div>
-              {user && (
-                <>
-                  <p>UserID: {user.userId}</p>
-                  <p>Token: {user.tokenInCookies}</p>
-                  <p>name: {user.name}</p>
-                  <p>email: {user.email}</p>
-                </>
-              )}
-            </div> */}
-            <button type="submit">로그아웃</button>
-          </form>
-        </AC.Gnav>
-        <AC.Next>
-          <AC.ContractBtn onClick={() => navi("/admin/contract")}>
-            계약서 작성하기
-          </AC.ContractBtn>
-        </AC.Next>
-      </AC.Menu>
-      <AC.Typing>서류목록</AC.Typing>
-      <AC.Page>여긴 뭐드라</AC.Page>
-    </AC.Wrapper>
-  );
+  if (user) {
+    return (
+      <AC.Wrapper>
+        <AC.Menu>
+          <AC.User>
+            <h1>환영합니다 {user.name}님!</h1>
+          </AC.User>
+          <AC.Gnav>
+            <form onSubmit={logoutHandler}>
+              <ul>
+                <li>계약서 관리</li>
+                <li>저장된 양식</li>
+              </ul>
+              {/* <div>
+                {user && (
+                  <>
+                    <p>UserID: {user.userId}</p>
+                    <p>Token: {user.tokenInCookies}</p>
+                    <p>name: {user.name}</p>
+                    <p>email: {user.email}</p>
+                  </>
+                )}
+              </div> */}
+              <button type="submit">로그아웃</button>
+            </form>
+          </AC.Gnav>
+          <AC.Next>
+            <AC.ContractBtn onClick={() => navi("/admin/contract")}>
+              계약서 작성하기
+            </AC.ContractBtn>
+          </AC.Next>
+        </AC.Menu>
+        <AC.Typing>서류목록</AC.Typing>
+        <AC.Page>여긴 뭐드라</AC.Page>
+      </AC.Wrapper>
+    );
+  } else {
+    return (
+      <>
+        <h1>로그인 정보가 없습니다.</h1>
+      </>
+    );
+  }
 }
 
 export default Admin_main;

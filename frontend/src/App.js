@@ -10,6 +10,8 @@ import AdminMain from "./pages/admin-pages/AdminMain";
 import ClientMain from "./pages/client-pages/ClientMain";
 import SignupPage from "./pages/SignupPage";
 import AdminContract1 from "./pages/admin-pages/AdminContract1";
+import AdminPdfTest from "./pages/admin-pages/AdminPdfTest";
+import AdminContractPdf from "./pages/admin-pages/AdminContractPdf";
 
 function App() {
   return (
@@ -20,7 +22,12 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/admin" element={<AdminMain />} />
         <Route path="/client" element={<ClientMain />} />
-        <Route path="/admin/contract" element={<AdminContract1 />} />
+        <Route path="/admin/contract/*" element={<AdminContract1 />} />
+        <Route path="/admin/contract/pdftest" element={<AdminPdfTest />} />
+        <Route
+          path="/admin/contract/pdfpdfpdfpdfpdf"
+          element={<AdminContractPdf />}
+        />
       </Routes>
     </UserProvider>
   );

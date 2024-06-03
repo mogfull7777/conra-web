@@ -3,13 +3,12 @@ import styled from "styled-components";
 // AdminMain.js css
 
 export const Wrapper = styled.div`
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   display: grid;
   grid-template-columns: 1fr 5fr 5fr;
   grid-template-areas: "menu typing page";
   grid-gap: 1rem;
-  background-color: #575;
 `;
 
 export const Menu = styled.aside`
@@ -19,7 +18,7 @@ export const Menu = styled.aside`
   display: grid;
   grid-template-rows: 10% auto 10%;
   grid-template-areas: "user" "gnav" "next";
-  background-color: #999;
+  border: 1px solid green;
   word-break: break-all;
 `;
 
@@ -80,25 +79,26 @@ export const ContractBtn = styled.button`
 
 export const StepMenu = styled.aside`
   width: 100%;
-  height: 100%;
+  height: auto;
   grid-area: menu;
   grid-template-rows: 10% auto 10%;
 
-  background-color: #999;
+  border: 1px solid green;
   word-break: break-all;
 `;
-export const ContractTyping = styled.aside`
+export const ContractTyping = styled.div`
   width: 100%;
-  height: 100%;
+  height: auto;
   grid-area: typing;
-  background-color: gray;
+  border: 1px solid green;
 `;
 
-export const ContractView = styled.main`
+export const ContractView = styled.div`
   width: 100%;
   height: auto;
   grid-area: page;
-  background-color: blue;
+  border: 1px solid green;
+  background-color: gray;
 `;
 
 export const ContractTitle = styled.article`
@@ -113,7 +113,9 @@ export const ContractContent = styled.article`
 export const ContractContentText = styled.div`
   display: flex;
 `;
-export const ContentNameText = styled.div``;
+export const ContentNameText = styled.div`
+  padding: 1rem;
+`;
 
 export const ContractContentinput = styled.input`
   width: 5rem;
