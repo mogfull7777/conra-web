@@ -1,63 +1,88 @@
 import { React, useRef } from "react";
-import * as AC from "./AdminPageCss";
-import { jsPDF } from "jspdf";
-import { pdffont } from "../PdfFont"; // pdf 폰트 인코딩 파일
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import * as AC from "./AdminPageCss";
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  PDFViewer,
+  Font,
+} from "@react-pdf/renderer";
+
+// 글꼴 굷기 정렬
+import NotoSansKR100 from "../../fonts/NotoSansKR-Thin.ttf";
+import NotoSansKR200 from "../../fonts/NotoSansKR-ExtraLight.ttf";
+import NotoSansKR300 from "../../fonts/NotoSansKR-Light.ttf";
+import NotoSansKR400 from "../../fonts/NotoSansKR-Medium.ttf";
+import NotoSansKR500 from "../../fonts/NotoSansKR-Regular.ttf";
+import NotoSansKR600 from "../../fonts/NotoSansKR-SemiBold.ttf";
+import NotoSansKR700 from "../../fonts/NotoSansKR-Bold.woff";
+import NotoSansKR800 from "../../fonts/NotoSansKR-ExtraBold.ttf";
+import NotoSansKR900 from "../../fonts/NotoSansKR-Black.ttf";
 import { useUser } from "../../UserContext";
 
-function AdminContractView() {
-  const { contractText, setContractText } = useUser();
+Font.register({
+  family: "NotoSansKR",
+  fonts: [
+    { src: NotoSansKR100, fontStyle: 100 },
+    { src: NotoSansKR200, fontStyle: 200 },
+    { src: NotoSansKR300, fontStyle: 300 },
+    { src: NotoSansKR400, fontStyle: 400 },
+    { src: NotoSansKR500, fontStyle: 500 },
+    { src: NotoSansKR600, fontStyle: 600 },
+    { src: NotoSansKR700, fontStyle: 700 },
+    { src: NotoSansKR800, fontStyle: 800 },
+    { src: NotoSansKR900, fontStyle: 900 },
+  ],
+});
 
-  const navi = useNavigate();
+// 스타일 생성
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: "row",
+    fontFamily: "NotoSansKR",
+    fontStyle: 300,
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1,
+  },
+  preview: {
+    fontSize: "11px",
+    fontWeight: "normal",
+    fontStyle: 200,
+  },
+});
 
-  // const [contractText, setContractText] = useState("");
+// ____PDF
+function PDF({ contractText }) {
   // 문서 영역
   const contractPage = useRef("");
 
-  // ________________pdf 프린트 기능.
-  const savePdf = () => {
-    const doc = new jsPDF({
-      orientation: "p", // "p"는 세로(portrait), "l"은 가로(landscape)
-      unit: "mm", // 단위는 mm
-      format: "a4", // A4 크기
-    });
+  return (
+    <>
+      <Document>
+        <Page size="A4" style={styles.page} ref={contractPage}>
+          <View style={styles.section}>
+            <Text>계약서 내용</Text>
+            <Text style={styles.preview}>this is preview</Text>
+            <Text style={styles.preview}>{contractText}</Text>
+          </View>
+        </Page>
+      </Document>
+    </>
+  );
+}
 
-    // 폰트 추가 및 설정
-    doc.addFileToVFS("SUITE Variable.ttf", pdffont);
-    doc.addFont("SUITE Variable.ttf", "SUITE Variable", "normal");
+const AdminContractView = ({ user, contractText, updatePreview }) => {
+  const navi = useNavigate();
+  const { setContractText } = useUser();
 
-    // 폰트 크기 설정
-    doc.setFontSize(11);
-    // 폰트 설정
-    doc.setFont("SUITE Variable");
-    // 텍스트 추가
-    const text = contractText;
-    const lines = doc.splitTextToSize(text, 190); // A4 페이지의 실제 사용 가능 너비를 고려 (예: 190mm)
-    doc.text(lines, 10, 20);
-    // PDF 저장
-    doc.save("contract.pdf");
-  };
-
-  // ________________프린트 버튼 로직 연결
-  const printContent = () => {
-    const printableArea = document.getElementById("printableArea");
-    if (!printableArea) {
-      console.error("printableArea element not found");
-      return;
-    }
-    // 기존 내용 저장
-    const originalContents = document.body.innerHTML;
-    // 프린트할 내용 설정
-    const printContents = printableArea.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    // 원래 내용 복원
-    document.body.innerHTML = originalContents;
-    window.location.reload(); // 페이지를 새로 고침하여 원래 상태로 복원
-  };
-
-  // ________________문서 유저 데이터에 저장
+  // 문서 유저 데이터에 저장
   const saveDocument = async () => {
     try {
       const response = await axios.post(
@@ -70,30 +95,24 @@ function AdminContractView() {
         navi("/admin");
         console.log("문서 내용 :", contractText);
         setContractText("");
+        updatePreview("");
       } else {
         alert("문서 저장에 실패했습니다.");
       }
     } catch (err) {
       console.error("문서 저장 실패: ", err);
-      alert("문서 저장에 실패했습니다.");
+      alert("문서 저장 도중 에러가 발생했습니다.");
     }
   };
 
   return (
-    <>
-      <AC.ContractView id="printableArea">
-        <div ref={contractPage}>
-          <h2>위탁계약서</h2>
-          <ol>
-            <li dangerouslySetInnerHTML={{ __html: contractText }}></li>
-          </ol>
-        </div>
-        <button onClick={savePdf}>PDF로 저장</button>
-        <button onClick={printContent}>프린트</button>
-        <button onClick={saveDocument}>저장</button>
-      </AC.ContractView>
-    </>
+    <AC.ContractView>
+      <PDFViewer style={{ width: "100%", height: "900px" }}>
+        <PDF user={user} contractText={contractText} />
+      </PDFViewer>
+      <button onClick={saveDocument}>저장</button>
+    </AC.ContractView>
   );
-}
+};
 
 export default AdminContractView;

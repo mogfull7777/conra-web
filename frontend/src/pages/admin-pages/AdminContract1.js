@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useUser } from "../../UserContext";
 import Cookies from "js-cookie";
 import * as AC from "./AdminPageCss";
@@ -6,13 +6,14 @@ import axios from "axios";
 import { Outlet, Route, Routes } from "react-router-dom";
 import AdminContractNav from "./AdminContractNav";
 import AdminContractTyping from "./AdminContractTyping";
+
 import AdminContractView from "./AdminContractView";
 
-const AdminContractLayout = () => {
+const AdminContractLayout = ({ updatePreview, htmlPage, setHtmlPage }) => {
   return (
     <>
-      <AdminContractNav />
-      <AdminContractTyping />
+      <AdminContractNav setHtmlPage={setHtmlPage} />
+      <AdminContractTyping updatePreview={updatePreview} htmlPage={htmlPage} />
       <Outlet />
     </>
   );
@@ -20,9 +21,16 @@ const AdminContractLayout = () => {
 
 function AdminContract1() {
   const { user, saveUser } = useUser();
+  const [contractText, setContractText] = useState("");
+  const [htmlPage, setHtmlPage] = useState("title");
 
   // ____토큰을 사용하여 유저 정보를 가져오고 저장.
   useEffect(() => {
+    const storedContractText = localStorage.getItem("contractText");
+    if (storedContractText) {
+      setContractText(storedContractText);
+    }
+
     const token = Cookies.get("user_auth");
     const storedUser = localStorage.getItem("user");
 
@@ -49,13 +57,37 @@ function AdminContract1() {
     return response.data;
   };
 
+  // ____작성중인 정보 로컬스토리지에 저장.
+  const updatePreview = (text) => {
+    setContractText(text);
+    localStorage.setItem("contractText", text);
+  };
+
   if (user) {
     return (
       <>
         <AC.Wrapper>
           <Routes>
-            <Route path="/" element={<AdminContractLayout />}>
-              <Route index element={<AdminContractView />} />
+            <Route
+              path="/"
+              element={
+                <AdminContractLayout
+                  updatePreview={updatePreview}
+                  htmlPage={htmlPage}
+                  setHtmlPage={setHtmlPage}
+                />
+              }
+            >
+              <Route
+                index
+                element={
+                  <AdminContractView
+                    contractText={contractText}
+                    user={user}
+                    updatePreview={updatePreview}
+                  />
+                }
+              />
             </Route>
           </Routes>
         </AC.Wrapper>
@@ -87,4 +119,6 @@ export default AdminContract1;
 
 // 2. 프린트 후 취소하면 작성 한 사항 없어짐. ===> View컴포넌트 교체 후 고민 ===> react-pdf 사용시 굳이 필요 없을 수도??
 // 3. 프리뷰 기능 활성화
-// 4. 새로고침시 사라지는거 방지.
+// 4. 새로고침시 사라지는거 방지. ===> 새로고침시 작성중인거 그대로 유지.
+// 5. switch brack가 없음.
+// 6. 화면에 Typing화면이 안뜸.
