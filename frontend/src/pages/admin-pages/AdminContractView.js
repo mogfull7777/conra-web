@@ -1,101 +1,51 @@
-import { React, useRef } from "react";
+import { React } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import * as AC from "./AdminPageCss";
-import {
-  Page,
-  Text,
-  View,
-  Document,
-  StyleSheet,
-  PDFViewer,
-  Font,
-} from "@react-pdf/renderer";
-
-// 글꼴 굷기 정렬
-import NotoSansKR100 from "../../fonts/NotoSansKR-Thin.ttf";
-import NotoSansKR200 from "../../fonts/NotoSansKR-ExtraLight.ttf";
-import NotoSansKR300 from "../../fonts/NotoSansKR-Light.ttf";
-import NotoSansKR400 from "../../fonts/NotoSansKR-Medium.ttf";
-import NotoSansKR500 from "../../fonts/NotoSansKR-Regular.ttf";
-import NotoSansKR600 from "../../fonts/NotoSansKR-SemiBold.ttf";
-import NotoSansKR700 from "../../fonts/NotoSansKR-Bold.woff";
-import NotoSansKR800 from "../../fonts/NotoSansKR-ExtraBold.ttf";
-import NotoSansKR900 from "../../fonts/NotoSansKR-Black.ttf";
 import { useUser } from "../../UserContext";
 
-Font.register({
-  family: "NotoSansKR",
-  fonts: [
-    { src: NotoSansKR100, fontStyle: 100 },
-    { src: NotoSansKR200, fontStyle: 200 },
-    { src: NotoSansKR300, fontStyle: 300 },
-    { src: NotoSansKR400, fontStyle: 400 },
-    { src: NotoSansKR500, fontStyle: 500 },
-    { src: NotoSansKR600, fontStyle: 600 },
-    { src: NotoSansKR700, fontStyle: 700 },
-    { src: NotoSansKR800, fontStyle: 800 },
-    { src: NotoSansKR900, fontStyle: 900 },
-  ],
-});
+const AdminContractView = ({
+  contractMainTitle,
+  contractText,
+  contractSign,
+  updateTitle,
+  updateContent,
+  updateSign,
+}) => {
+  const { setContractMainTitle, setContractText, setContractSign } = useUser();
 
-// 스타일 생성
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: "row",
-    fontFamily: "NotoSansKR",
-    fontStyle: 300,
-  },
-  section: {
-    margin: 10,
-    padding: 10,
-    flexGrow: 1,
-  },
-  preview: {
-    fontSize: "11px",
-    fontWeight: "normal",
-    fontStyle: 200,
-  },
-});
-
-// ____PDF
-function PDF({ contractText }) {
-  // 문서 영역
-  const contractPage = useRef("");
-
-  return (
-    <>
-      <Document>
-        <Page size="A4" style={styles.page} ref={contractPage}>
-          <View style={styles.section}>
-            <Text>계약서 내용</Text>
-            <Text style={styles.preview}>this is preview</Text>
-            <Text style={styles.preview}>{contractText}</Text>
-          </View>
-        </Page>
-      </Document>
-    </>
-  );
-}
-
-const AdminContractView = ({ user, contractText, updatePreview }) => {
-  const navi = useNavigate();
-  const { setContractText } = useUser();
+  console.log("contractMainTitle :", contractMainTitle);
+  console.log("contractText :", contractText);
+  console.log("contractSign :", contractSign);
 
   // 문서 유저 데이터에 저장
   const saveDocument = async () => {
     try {
       const response = await axios.post(
         "http://localhost:5000/api/users/saveContract",
-        { document: contractText },
+        {
+          document: {
+            title: contractMainTitle,
+            content: contractText,
+            sign: contractSign,
+          },
+        },
         { withCredentials: true }
       );
       if (response.data.success) {
         alert("문서가 저장되었습니다.");
-        navi("/admin");
+
+        console.log("타이틀 내용 :", contractMainTitle);
         console.log("문서 내용 :", contractText);
-        setContractText("");
-        updatePreview("");
+        console.log("서명 내용 :", contractSign);
+
+        // 로컬 스토리지 문서 백지화.
+        setContractMainTitle({});
+        setContractText([]);
+        setContractSign({});
+
+        updateTitle({});
+        updateContent([]);
+        updateSign({});
       } else {
         alert("문서 저장에 실패했습니다.");
       }
@@ -106,12 +56,48 @@ const AdminContractView = ({ user, contractText, updatePreview }) => {
   };
 
   return (
-    <AC.ContractView>
-      <PDFViewer style={{ width: "100%", height: "900px" }}>
-        <PDF user={user} contractText={contractText} />
-      </PDFViewer>
-      <button onClick={saveDocument}>저장</button>
-    </AC.ContractView>
+    <>
+      <AC.ContractView>
+        <AC.ContractPaper>
+          <AC.ContractPaperTitle>
+            {contractMainTitle.title}
+          </AC.ContractPaperTitle>
+          <AC.ContractPaperSubTitle>
+            {contractMainTitle.clientName}(이하 "발주처라 함")과
+            {contractMainTitle.adminName}(이하 "수주처"라 함)은
+            <br />
+            {contractMainTitle.content}와 관련한 계약을 다름과 같이 체결한다.
+          </AC.ContractPaperSubTitle>
+          <ol>
+            {contractText.map((item, index) => (
+              <li key={index}>
+                <AC.ContractPaperContractContext>
+                  [ 제 {index + 1} 항 ]
+                  <AC.ContractPaperContractTitle>
+                    {item.name}
+                  </AC.ContractPaperContractTitle>
+                </AC.ContractPaperContractContext>
+                <AC.ContractPaperText>{item.description}</AC.ContractPaperText>
+              </li>
+            ))}
+          </ol>
+          <ul>
+            <li>
+              <p>{contractSign.company}</p>
+              <p>{contractSign.adrass}</p>
+              <p>{contractSign.CEO}</p>
+              <p>{contractSign.phone}</p>
+              <p>{contractSign.accountNumber}</p>
+              <div>서명하는 곳</div>
+              {contractSign.dataUrl && (
+                <img src={contractSign.dataUrl} alt="signature" />
+              )}
+            </li>
+          </ul>
+        </AC.ContractPaper>
+        <button onClick={saveDocument}>저장</button>
+      </AC.ContractView>
+    </>
   );
 };
 

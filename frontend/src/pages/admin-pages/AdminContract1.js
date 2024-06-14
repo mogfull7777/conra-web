@@ -6,14 +6,25 @@ import axios from "axios";
 import { Outlet, Route, Routes } from "react-router-dom";
 import AdminContractNav from "./AdminContractNav";
 import AdminContractTyping from "./AdminContractTyping";
-
 import AdminContractView from "./AdminContractView";
+import AdminContractCheck from "./AdminContractCheck";
 
-const AdminContractLayout = ({ updatePreview, htmlPage, setHtmlPage }) => {
+const AdminContractLayout = ({
+  updateTitle,
+  updateContent,
+  updateSign,
+  htmlPage,
+  setHtmlPage,
+}) => {
   return (
     <>
       <AdminContractNav setHtmlPage={setHtmlPage} />
-      <AdminContractTyping updatePreview={updatePreview} htmlPage={htmlPage} />
+      <AdminContractTyping
+        updateTitle={updateTitle}
+        updateContent={updateContent}
+        updateSign={updateSign}
+        htmlPage={htmlPage}
+      />
       <Outlet />
     </>
   );
@@ -21,14 +32,50 @@ const AdminContractLayout = ({ updatePreview, htmlPage, setHtmlPage }) => {
 
 function AdminContract1() {
   const { user, saveUser } = useUser();
-  const [contractText, setContractText] = useState("");
+  // 계약서의 메인 제목을 추가하는 state
+  const [contractMainTitle, setContractMainTitle] = useState({});
+  // 계약서의 항목을 추가하는 state
+  const [contractText, setContractText] = useState([]);
+  // 계약서의 서명을 추가하는 state
+  const [contractSign, setContractSign] = useState({});
+  // typing 디스플레이를 바꾸는 state
   const [htmlPage, setHtmlPage] = useState("title");
 
   // ____토큰을 사용하여 유저 정보를 가져오고 저장.
   useEffect(() => {
+    // 문서 내용 유저정보에서 가져옴.
+    const storedContractTitle = localStorage.getItem("contractMainTitle");
     const storedContractText = localStorage.getItem("contractText");
+    const storedContractSign = localStorage.getItem("contractSign");
+
+    if (storedContractTitle) {
+      try {
+        // 문서 타이틀 데이터 저장
+        const parsedData = JSON.parse(storedContractTitle);
+        setContractMainTitle(parsedData);
+      } catch (error) {
+        console.error("Parsing error:", error);
+      }
+    }
+
     if (storedContractText) {
-      setContractText(storedContractText);
+      try {
+        // 문서 내용 데이터 저장
+        const parsedData = JSON.parse(storedContractText);
+        setContractText(parsedData);
+      } catch (error) {
+        console.error("Parsing error:", error);
+      }
+    }
+
+    if (storedContractSign) {
+      try {
+        // 문서 서명 데이터 저장
+        const parsedData = JSON.parse(storedContractSign);
+        setContractSign(parsedData);
+      } catch (error) {
+        console.error("Parsing error:", error);
+      }
     }
 
     const token = Cookies.get("user_auth");
@@ -58,9 +105,20 @@ function AdminContract1() {
   };
 
   // ____작성중인 정보 로컬스토리지에 저장.
-  const updatePreview = (text) => {
-    setContractText(text);
-    localStorage.setItem("contractText", text);
+  // 제목
+  const updateTitle = (title) => {
+    setContractMainTitle(title);
+    localStorage.setItem("contractMainTitle", JSON.stringify(title));
+  };
+  // 내용
+  const updateContent = (content) => {
+    setContractText(content);
+    localStorage.setItem("contractText", JSON.stringify(content));
+  };
+  // 서명
+  const updateSign = (sign) => {
+    setContractSign(sign);
+    localStorage.setItem("contractSign", JSON.stringify(sign));
   };
 
   if (user) {
@@ -72,9 +130,11 @@ function AdminContract1() {
               path="/"
               element={
                 <AdminContractLayout
-                  updatePreview={updatePreview}
                   htmlPage={htmlPage}
                   setHtmlPage={setHtmlPage}
+                  updateTitle={updateTitle}
+                  updateContent={updateContent}
+                  updateSign={updateSign}
                 />
               }
             >
@@ -82,9 +142,27 @@ function AdminContract1() {
                 index
                 element={
                   <AdminContractView
+                    contractMainTitle={contractMainTitle}
                     contractText={contractText}
+                    contractSign={contractSign}
                     user={user}
-                    updatePreview={updatePreview}
+                    updateTitle={updateTitle}
+                    updateContent={updateContent}
+                    updateSign={updateSign}
+                  />
+                }
+              />
+              <Route
+                path="/contractcheck"
+                element={
+                  <AdminContractCheck
+                    contractMainTitle={contractMainTitle}
+                    contractText={contractText}
+                    contractSign={contractSign}
+                    user={user}
+                    updateTitle={updateTitle}
+                    updateContent={updateContent}
+                    updateSign={updateSign}
                   />
                 }
               />
@@ -120,5 +198,3 @@ export default AdminContract1;
 // 2. 프린트 후 취소하면 작성 한 사항 없어짐. ===> View컴포넌트 교체 후 고민 ===> react-pdf 사용시 굳이 필요 없을 수도??
 // 3. 프리뷰 기능 활성화
 // 4. 새로고침시 사라지는거 방지. ===> 새로고침시 작성중인거 그대로 유지.
-// 5. switch brack가 없음.
-// 6. 화면에 Typing화면이 안뜸.

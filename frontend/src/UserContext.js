@@ -10,7 +10,13 @@ const UserContext = createContext(null);
 export const UserProvider = ({ children }) => {
   const initialUser = JSON.parse(localStorage.getItem("user"));
   const [user, setUser] = useState(initialUser);
+  // 계약서의 메인 제목을 추가하는 state
+  const [contractMainTitle, setContractMainTitle] = useState("");
+  // 계약서의 항목을 추가하는 state
   const [contractText, setContractText] = useState("");
+  // 계약서의 서명을 추가하는 state
+  const [contractSign, setContractSign] = useState("");
+
   const navi = useNavigate();
 
   // 로그인 함수
@@ -96,6 +102,12 @@ export const UserProvider = ({ children }) => {
       .then(() => {
         setUser(null);
         localStorage.removeItem("user");
+        localStorage.removeItem("contractMainTitle");
+        localStorage.removeItem("contractText");
+        localStorage.removeItem("contractSign");
+        setContractMainTitle({});
+        setContractText([]);
+        setContractSign({});
         alert("로그아웃 되었습니다.");
         navi("/login");
       })
@@ -114,8 +126,12 @@ export const UserProvider = ({ children }) => {
         saveUser,
         loginUser,
         logoutUser,
+        contractMainTitle,
+        setContractMainTitle,
         contractText,
         setContractText,
+        contractSign,
+        setContractSign,
       }}
     >
       {children}

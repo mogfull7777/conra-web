@@ -117,6 +117,7 @@ app.get("/api/users/auth", auth, (req, res) => {
 
 // ________문서 저장 시
 app.post("/api/users/saveContract", auth, async (req, res) => {
+  // 저장하고자 하는 유저 검색.
   try {
     const user = await User.findOne({ _id: req.user._id });
     if (!user) {
@@ -131,6 +132,8 @@ app.post("/api/users/saveContract", auth, async (req, res) => {
 
     await user.save();
     res.status(200).json({ success: true });
+
+    console.log("저장유형 확인 :", req.body.document);
   } catch (err) {
     console.error("문서 저장 실패 :", err);
     res

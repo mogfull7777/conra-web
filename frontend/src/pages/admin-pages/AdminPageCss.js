@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 // AdminMain.js css
 
-export const Wrapper = styled.div`
+export const Wrapper = styled.main`
   width: 100%;
   height: 100vh;
   display: grid;
@@ -86,19 +86,22 @@ export const StepMenu = styled.aside`
   border: 1px solid green;
   word-break: break-all;
 `;
+
+// AdminContractnav.js css
+
+// AdminContractTyping.js css
 export const ContractTyping = styled.div`
   width: 100%;
-  height: auto;
+  height: 100%;
   grid-area: typing;
   border: 1px solid green;
 `;
 
-export const ContractView = styled.div`
-  width: 100%;
-  height: auto;
-  grid-area: page;
-  border: 1px solid green;
-  background-color: gray;
+// AdminContractTyping.js css
+// ===> (htmlpage === "title")
+
+export const ContentNameText = styled.div`
+  padding: 1rem;
 `;
 
 export const ContractTitle = styled.article`
@@ -106,18 +109,122 @@ export const ContractTitle = styled.article`
   word-break: keep-all;
 `;
 
-export const ContractContent = styled.article`
-  display: flex;
-`;
-
 export const ContractContentText = styled.div`
   display: flex;
-`;
-export const ContentNameText = styled.div`
-  padding: 1rem;
+  flex-direction: column;
 `;
 
-export const ContractContentinput = styled.input`
+export const ContractContentInputSec = styled.div`
+  display: flex;
+`;
+
+export const ContractContentInput = styled.input`
   width: 5rem;
   height: 1.2rem;
 `;
+
+// ===> (htmlpage === "contents")
+
+export const ContractContent = styled.article`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const ContractContentTitle = styled.input`
+  width: 60%;
+  height: 1.5rem;
+`;
+
+export const ContractContentTextarea = styled.textarea`
+  width: 90%;
+  height: auto;
+  resize: none;
+`;
+
+// ===> (htmlpage === "sign")
+
+export const ContractSignInput = styled.input`
+  width: 60%;
+  height: 1.5rem;
+`;
+
+export const ContentSignCanvas = styled.canvas`
+  width: 15rem;
+  height: 8rem;
+  background-color: gray;
+`;
+
+export const ContractTypingBtn = styled.button`
+  width: 10rem;
+  box-sizing: border-box;
+  border-radius: 3.125rem;
+  height: 4.375rem;
+  border: none;
+  box-shadow: 0px 0px 0px 0.025rem #ffffff;
+  background-color: #353535;
+  padding: 1.25rem;
+  font-size: 1.25rem;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.4s;
+  font-weight: bold;
+  margin-left: auto;
+  &:hover {
+    color: #353535;
+    background: #ffffff;
+    box-shadow: 0px 0px 0px 0.025rem #353535;
+  }
+`;
+
+// AdminContractView.js css
+
+export const ContractView = styled.section`
+  width: 100%;
+  height: auto;
+  grid-area: page;
+  border: 1px solid green;
+  background-color: gray;
+  position: relative;
+`;
+
+export const ContractPaper = styled.article`
+  width: calc(100vh * 0.6);
+  height: calc((100vh * 0.6) * 1.414);
+  background-color: #eee;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 6rem;
+`;
+
+export const ContractPaperTitle = styled.h3`
+  text-align: center;
+  font-weight: bolder;
+  font-size: 2rem;
+  margin-bottom: 3rem;
+`;
+
+export const ContractPaperSubTitle = styled.h4`
+  font-weight: bold;
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+`;
+
+export const ContractPaperContractTitle = styled.span`
+  font-weight: bold;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+`;
+export const ContractPaperContractContext = styled.p`
+  font-weight: normal;
+  font-size: 1rem;
+  margin-bottom: 0.6rem;
+`;
+export const ContractPaperText = styled.p`
+  font-weight: normal;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+`;
+
+// AdminContractCheck.js css
