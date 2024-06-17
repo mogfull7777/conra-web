@@ -224,11 +224,10 @@ export const ContractPaper = styled.article`
 `;
 
 export const ContractPaperTextView = styled.div`
-  width: 100%;
-  height: 80%;
+  width: 90%;
+  height: 90%;
   margin: 0 auto;
   position: relative;
-  overflow: hidden;
   border: 1px dashed red; /* 디버깅을 위해 추가한 스타일 */
 `;
 
@@ -237,12 +236,14 @@ export const ContractPaperTitle = styled.h3`
   font-weight: bolder;
   font-size: calc(0.2rem + 1vw);
   margin-bottom: calc(1rem + 1vw);
+  background-color: #999;
 `;
 
 export const ContractPaperSubTitle = styled.h4`
   font-weight: bold;
   font-size: calc(0.06rem + 0.8vw);
   margin-bottom: calc(0.6rem + 0.8vw);
+  background-color: #999;
 `;
 
 export const ContractPaperContractTitle = styled.span`
@@ -250,6 +251,7 @@ export const ContractPaperContractTitle = styled.span`
   font-size: calc(0.05rem + 0.6vw);
   margin-bottom: calc(0.05rem + 0.4vw);
   margin-left: calc(0.05rem + 0.4vw);
+  background-color: #999;
 `;
 
 export const ContractPaperContractList = styled.li`
@@ -260,12 +262,14 @@ export const ContractPaperContractContext = styled.p`
   font-weight: normal;
   font-size: calc(0.05rem + 0.5vw);
   margin-bottom: calc(0.05rem + 0.4vw);
+  background-color: #999;
 `;
 
 export const ContractPaperText = styled.p`
   font-weight: normal;
   font-size: calc(0.05rem + 0.5vw);
   margin-bottom: calc(0.05rem + 0.5vw);
+  background-color: #999;
 `;
 
 // AdminContractCheck.js css
