@@ -178,28 +178,6 @@ export const ContractTypingBtn = styled.button`
 
 // AdminContractView.js css
 
-// export const ContractView = styled.section`
-//   width: 100%;
-//   height: auto;
-//   grid-area: page;
-//   border: 1px solid green;
-//   background-color: gray;
-//   position: relative;
-// `;
-
-// export const ContractPaper = styled.article`
-//   width: 85%;
-//   max-width: 210mm;
-//   aspect-ratio: 210 / 297; /* A4 비율 유지 */
-//   background-color: #eee;
-//   position: absolute;
-//   top: 50%;
-//   left: 50%;
-//   transform: translate(-50%, -50%);
-//   padding: 6rem;
-//   box-sizing: border-box;
-// `;
-
 export const ContractView = styled.section`
   width: 100%;
   height: auto;
@@ -218,16 +196,15 @@ export const ContractPaper = styled.article`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 6rem;
+  padding: 9%;
   box-sizing: border-box;
   overflow: hidden;
 `;
 
 export const ContractPaperTextView = styled.div`
-  width: 90%;
-  height: 90%;
-  margin: 0 auto;
-  position: relative;
+  width: 100%;
+  height: 100%;
+  word-break: break-all;
   border: 1px dashed red; /* 디버깅을 위해 추가한 스타일 */
 `;
 
