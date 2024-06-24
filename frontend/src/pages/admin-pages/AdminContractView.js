@@ -1,11 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import * as AC from "./AdminPageCss";
 import axios from "axios";
 import { useUser } from "../../UserContext";
 
 // 요소의 높이를 측정하는 헬퍼 함수
-const measureElementHeight = async (element, containerWidth) => {
+const measureElementHeight = async (
+  element,
+  containerWidth,
+  containerHeight
+) => {
   return new Promise((resolve) => {
     const tempDiv = document.createElement("div");
     tempDiv.style.position = "absolute";
@@ -74,6 +78,37 @@ const AdminContractView = ({
     };
   }, [textViewRef]);
 
+  const handleEdit = useCallback(
+    (index) => {
+      const item = contractText[index];
+      const newName = prompt("수정할 항목의 제목을 입력하세요", item.name);
+      const newDescription = prompt(
+        "수정할 내용을 입력하세요",
+        item.description
+      );
+      if (newName !== null && newDescription !== null) {
+        const updatedText = [...contractText];
+        updatedText[index] = {
+          ...item,
+          name: newName,
+          description: newDescription,
+        };
+        setContractText(updatedText);
+        updateContent(updatedText);
+      }
+    },
+    [contractText, updateContent, setContractText]
+  );
+
+  const handleDelete = useCallback(
+    (index) => {
+      const updatedText = contractText.filter((_, i) => i !== index);
+      setContractText(updatedText);
+      updateContent(updatedText);
+    },
+    [contractText, updateContent, setContractText]
+  );
+
   useEffect(() => {
     const splitPages = async () => {
       if (!textViewRef.current) return;
@@ -123,6 +158,8 @@ const AdminContractView = ({
               </AC.ContractPaperContractTitle>
             </AC.ContractPaperContractContext>
             <AC.ContractPaperText>{item.description}</AC.ContractPaperText>
+            <button onClick={() => handleEdit(index)}>수정</button>
+            <button onClick={() => handleDelete(index)}>삭제</button>
           </AC.ContractPaperContractList>
         );
 
@@ -181,7 +218,14 @@ const AdminContractView = ({
     };
 
     splitPages();
-  }, [contractMainTitle, contractText, contractSign, containerDimensions]);
+  }, [
+    contractMainTitle,
+    contractText,
+    contractSign,
+    containerDimensions,
+    handleEdit,
+    handleDelete,
+  ]);
 
   const handlePrevPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 0));

@@ -10,6 +10,7 @@ import {
   StyleSheet,
   PDFViewer,
   Font,
+  Image,
 } from "@react-pdf/renderer";
 
 // 글꼴 굷기 정렬
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
 });
 
 // ____PDF
-function PDF({ contractMainTitle, contractText }) {
+function PDF({ contractMainTitle, contractText, contractSign }) {
   // 문서 영역
   const contractPage = useRef("");
 
@@ -88,12 +89,20 @@ function PDF({ contractMainTitle, contractText }) {
             {contractText.map((item, index) => (
               <>
                 <Text style={styles.title}>
-                  <Text style={styles.titleNum}>제 {index + 1} 항</Text>
+                  <Text style={styles.titleNum}>[ 제 {index + 1} 조 ]</Text>
                   {item.name}
                 </Text>
                 <Text style={styles.preview}>{item.description}</Text>
               </>
             ))}
+            <Text style={styles.preview}>{contractSign.company}</Text>
+            <Text style={styles.preview}>{contractSign.adrass}</Text>
+            <Text style={styles.preview}>{contractSign.CEO}</Text>
+            <Text style={styles.preview}>{contractSign.phone}</Text>
+            <Text style={styles.preview}>{contractSign.accountNumber}</Text>
+            {contractSign.dataUrl && (
+              <Image src={contractSign.dataUrl} alt="signature" />
+            )}
           </View>
         </Page>
       </Document>
@@ -105,18 +114,20 @@ const AdminContractCheck = ({
   user,
   contractMainTitle,
   contractText,
+  contractSign,
   updateTitle,
   updateContent,
+  updateSign,
 }) => {
   const navi = useNavigate();
-  const { setContractMainTitle, setContractText } = useUser();
+  const { setContractMainTitle, setContractText, setContractSign } = useUser();
 
   // 문서 유저 데이터에 저장
   const saveDocument = async () => {
     try {
       const response = await axios.post(
         "http://localhost:5000/api/users/saveContract",
-        { document: contractMainTitle, contractText },
+        { document: contractMainTitle, contractText, contractSign },
         { withCredentials: true }
       );
       if (response.data.success) {
@@ -124,11 +135,14 @@ const AdminContractCheck = ({
         navi("/admin");
         console.log("타이틀 내용 :", contractMainTitle);
         console.log("문서 내용 :", contractText);
+        console.log("서명 내용 :", contractSign);
         // 로컬 스토리지 문서 백지화.
         setContractMainTitle({});
         setContractText([]);
+        setContractSign({});
         updateTitle({});
         updateContent([]);
+        updateSign([]);
       } else {
         alert("문서 저장에 실패했습니다.");
       }
@@ -141,11 +155,25 @@ const AdminContractCheck = ({
   // 자 여긴 HTML 페이지가 되는거고 nav에 pdf 뷰어 버튼 다는겁니다잉 06.11
   return (
     <AC.ContractView>
-      <PDFViewer style={{ width: "100%", height: "900px" }}>
+      <PDFViewer
+        style={{
+          width: "85%",
+          maxWidth: "210mm",
+          aspectRatio: "210 / 297",
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          padding: "9%",
+          boxSizing: "border-box",
+          overflow: "hidden",
+        }}
+      >
         <PDF
           user={user}
           contractMainTitle={contractMainTitle}
           contractText={contractText}
+          contractSign={contractSign}
         />
       </PDFViewer>
       <button onClick={saveDocument}>저장</button>
