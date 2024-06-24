@@ -16,19 +16,27 @@ function AdminContractNav({ setHtmlPage }) {
   return (
     <>
       <AC.StepMenu>
-        <h3>반갑습니다! {user.name}</h3>
-        <button onClick={logoutUser}>로그아웃</button>
-        <h3>메뉴영역</h3>
+        <AC.AdminNavTitle>
+          반갑습니다!
+          <br />
+          {user.name}
+        </AC.AdminNavTitle>
+        <AC.AdminNavBtn onClick={logoutUser}>로그아웃</AC.AdminNavBtn>
         <ul>
-          <li onClick={() => setHtmlPage("title")}>계약서 제목 설정</li>
-          <li onClick={() => setHtmlPage("contents")}>계약내용 입력</li>
-          <li onClick={() => setHtmlPage("sign")}>서명 입력</li>
-          <li>
-            <button onClick={pdfHandleToggle}>
-              {pdfChack ? "계약서 작성 화면 보기" : "계약서 pdf로 보기"}
-            </button>
-          </li>
+          <AC.AdminNavMenuBtn onClick={() => setHtmlPage("title")}>
+            계약서 제목 설정
+          </AC.AdminNavMenuBtn>
+          <AC.AdminNavMenuBtn onClick={() => setHtmlPage("contents")}>
+            계약내용 입력
+          </AC.AdminNavMenuBtn>
+          <AC.AdminNavMenuBtn onClick={() => setHtmlPage("sign")}>
+            서명 입력
+          </AC.AdminNavMenuBtn>
         </ul>
+
+        <AC.AdminNavBtn onClick={pdfHandleToggle}>
+          {pdfChack ? "계약서 작성 화면 보기" : "계약서 pdf로 보기"}
+        </AC.AdminNavBtn>
       </AC.StepMenu>
     </>
   );

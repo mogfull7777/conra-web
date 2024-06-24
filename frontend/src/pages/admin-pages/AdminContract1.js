@@ -123,53 +123,51 @@ function AdminContract1() {
 
   if (user) {
     return (
-      <>
-        <AC.Wrapper>
-          <Routes>
+      <AC.Wrapper>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <AdminContractLayout
+                htmlPage={htmlPage}
+                setHtmlPage={setHtmlPage}
+                updateTitle={updateTitle}
+                updateContent={updateContent}
+                updateSign={updateSign}
+              />
+            }
+          >
             <Route
-              path="/"
+              index
               element={
-                <AdminContractLayout
-                  htmlPage={htmlPage}
-                  setHtmlPage={setHtmlPage}
+                <AdminContractView
+                  contractMainTitle={contractMainTitle}
+                  contractText={contractText}
+                  contractSign={contractSign}
+                  user={user}
                   updateTitle={updateTitle}
                   updateContent={updateContent}
                   updateSign={updateSign}
                 />
               }
-            >
-              <Route
-                index
-                element={
-                  <AdminContractView
-                    contractMainTitle={contractMainTitle}
-                    contractText={contractText}
-                    contractSign={contractSign}
-                    user={user}
-                    updateTitle={updateTitle}
-                    updateContent={updateContent}
-                    updateSign={updateSign}
-                  />
-                }
-              />
-              <Route
-                path="/contractcheck"
-                element={
-                  <AdminContractCheck
-                    contractMainTitle={contractMainTitle}
-                    contractText={contractText}
-                    contractSign={contractSign}
-                    user={user}
-                    updateTitle={updateTitle}
-                    updateContent={updateContent}
-                    updateSign={updateSign}
-                  />
-                }
-              />
-            </Route>
-          </Routes>
-        </AC.Wrapper>
-      </>
+            />
+            <Route
+              path="/contractcheck"
+              element={
+                <AdminContractCheck
+                  contractMainTitle={contractMainTitle}
+                  contractText={contractText}
+                  contractSign={contractSign}
+                  user={user}
+                  updateTitle={updateTitle}
+                  updateContent={updateContent}
+                  updateSign={updateSign}
+                />
+              }
+            />
+          </Route>
+        </Routes>
+      </AC.Wrapper>
     );
   } else {
     return (

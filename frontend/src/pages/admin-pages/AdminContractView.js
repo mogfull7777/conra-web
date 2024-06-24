@@ -5,20 +5,12 @@ import axios from "axios";
 import { useUser } from "../../UserContext";
 
 // 요소의 높이를 측정하는 헬퍼 함수
-const measureElementHeight = async (
-  element,
-  containerWidth,
-  containerHeight
-) => {
+const measureElementHeight = async (element, containerWidth) => {
   return new Promise((resolve) => {
     const tempDiv = document.createElement("div");
     tempDiv.style.position = "absolute";
-    tempDiv.style.width = `${containerWidth}px`; // 동적으로 가져온 너비 적용
-    if (containerHeight) {
-      tempDiv.style.maxHeight = `${containerHeight}px`; // 필요에 따라 최대 높이 설정
-      tempDiv.style.overflow = "auto"; // 높이를 넘는 내용은 스크롤 처리
-    }
-    tempDiv.style.wordBreak = "break-all";
+    tempDiv.style.width = `${containerWidth}px`;
+    tempDiv.style.visibility = "hidden";
     document.body.appendChild(tempDiv);
     const root = createRoot(tempDiv);
 
@@ -29,7 +21,7 @@ const measureElementHeight = async (
       root.unmount();
       document.body.removeChild(tempDiv);
       resolve(height);
-    }, 100); // 높이를 측정하기 전 짧은 지연 시간
+    }, 100);
   });
 };
 
@@ -52,31 +44,34 @@ const AdminContractView = ({
   const textViewRef = useRef(null);
 
   // 리사이즈 핸들러 함수
-  const handleResize = () => {
+  const handleResize = useCallback(() => {
     if (textViewRef.current) {
-      setContainerDimensions({
-        width: textViewRef.current.offsetWidth,
-        height: textViewRef.current.offsetHeight,
-      });
+      const { offsetWidth, offsetHeight } = textViewRef.current;
+      return { width: offsetWidth, height: offsetHeight };
     }
-  };
+    return { width: 0, height: 0 };
+  }, []);
 
   useEffect(() => {
-    // ResizeObserver 설정
-    const resizeObserver = new ResizeObserver(() => handleResize());
     const currentRef = textViewRef.current;
+    const resizeObserver = new ResizeObserver(() => {
+      const dimensions = handleResize();
+      setContainerDimensions(dimensions);
+    });
+
     if (currentRef) {
       resizeObserver.observe(currentRef);
     }
-    // 초기 측정
-    handleResize();
+
+    const dimensions = handleResize();
+    setContainerDimensions(dimensions);
 
     return () => {
       if (currentRef) {
         resizeObserver.unobserve(currentRef);
       }
     };
-  }, [textViewRef]);
+  }, [handleResize]);
 
   const handleEdit = useCallback(
     (index) => {
@@ -113,10 +108,10 @@ const AdminContractView = ({
     const splitPages = async () => {
       if (!textViewRef.current) return;
 
+      const { width, height } = handleResize();
       let pageContent = [];
       let currentPageContent = [];
       let currentHeight = 0;
-      const textViewHeight = containerDimensions.height;
 
       if (contractMainTitle.title) {
         const titleElement = (
@@ -125,27 +120,47 @@ const AdminContractView = ({
               {contractMainTitle.title}
             </AC.ContractPaperTitle>
             <AC.ContractPaperSubTitle>
-              {contractMainTitle.clientName}(이하 "발주처라 함")과
-              {contractMainTitle.adminName}(이하 "수주처"라 함)은
-              <br />
-              {contractMainTitle.content}와 관련한 계약을 다름과 같이 체결한다.
+              {contractMainTitle.clientName}
+              <span
+                style={{
+                  fontWeight: "normal",
+                  fontSize: "calc(0.1rem + 0.5vw)",
+                }}
+              >
+                (이하 "발주처라 함")과
+              </span>
+              {contractMainTitle.adminName}
+              <span
+                style={{
+                  fontWeight: "normal",
+                  fontSize: "calc(0.1rem + 0.5vw)",
+                }}
+              >
+                (이하 "수주처"라 함)은
+              </span>
+              {contractMainTitle.content}
+              <span
+                style={{
+                  fontWeight: "normal",
+                  fontSize: "calc(0.1rem + 0.5vw)",
+                }}
+              >
+                와 관련한 계약을 다름과 같이 체결한다.
+              </span>
             </AC.ContractPaperSubTitle>
           </div>
         );
 
-        const height = await measureElementHeight(
-          titleElement,
-          containerDimensions.width
-        );
+        const titleHeight = await measureElementHeight(titleElement, width);
 
-        if (currentHeight + height > textViewHeight) {
+        if (currentHeight + titleHeight > height) {
           pageContent.push([...currentPageContent]);
           currentPageContent = [];
           currentHeight = 0;
         }
 
         currentPageContent.push(titleElement);
-        currentHeight += height;
+        currentHeight += titleHeight;
       }
 
       for (const [index, item] of contractText.entries()) {
@@ -163,30 +178,31 @@ const AdminContractView = ({
           </AC.ContractPaperContractList>
         );
 
-        const height = await measureElementHeight(
-          contentElement,
-          containerDimensions.width
-        );
+        const contentHeight = await measureElementHeight(contentElement, width);
 
-        if (currentHeight + height > textViewHeight) {
+        if (currentHeight + contentHeight > height) {
           pageContent.push([...currentPageContent]);
           currentPageContent = [];
           currentHeight = 0;
         }
 
         currentPageContent.push(contentElement);
-        currentHeight += height;
+        currentHeight += contentHeight;
       }
 
       if (contractSign.company) {
         const signElement = (
           <ul>
             <AC.ContractPaperContractList>
-              <p>{contractSign.company}</p>
-              <p>{contractSign.adrass}</p>
-              <p>{contractSign.CEO}</p>
-              <p>{contractSign.phone}</p>
-              <p>{contractSign.accountNumber}</p>
+              <AC.ContractPaperText>
+                {contractSign.company}
+              </AC.ContractPaperText>
+              <AC.ContractPaperText>{contractSign.adrass}</AC.ContractPaperText>
+              <AC.ContractPaperText>{contractSign.CEO}</AC.ContractPaperText>
+              <AC.ContractPaperText>{contractSign.phone}</AC.ContractPaperText>
+              <AC.ContractPaperText>
+                {contractSign.accountNumber}
+              </AC.ContractPaperText>
               <div>서명하는 곳</div>
               {contractSign.dataUrl && (
                 <img src={contractSign.dataUrl} alt="signature" />
@@ -195,19 +211,16 @@ const AdminContractView = ({
           </ul>
         );
 
-        const height = await measureElementHeight(
-          signElement,
-          containerDimensions.width
-        );
+        const signHeight = await measureElementHeight(signElement, width);
 
-        if (currentHeight + height > textViewHeight) {
+        if (currentHeight + signHeight > height) {
           pageContent.push([...currentPageContent]);
           currentPageContent = [];
           currentHeight = 0;
         }
 
         currentPageContent.push(signElement);
-        currentHeight += height;
+        currentHeight += signHeight;
       }
 
       if (currentPageContent.length > 0) {
@@ -222,9 +235,9 @@ const AdminContractView = ({
     contractMainTitle,
     contractText,
     contractSign,
-    containerDimensions,
     handleEdit,
     handleDelete,
+    handleResize,
   ]);
 
   const handlePrevPage = () => {
@@ -268,29 +281,27 @@ const AdminContractView = ({
   };
 
   return (
-    <>
-      <AC.ContractView>
-        <AC.ContractPaper>
-          <AC.ContractPaperTextView ref={textViewRef}>
-            {pages[currentPage]?.map((content, index) => (
-              <React.Fragment key={index}>{content}</React.Fragment>
-            ))}
-          </AC.ContractPaperTextView>
-        </AC.ContractPaper>
-        <div>
-          <button onClick={handlePrevPage} disabled={currentPage === 0}>
-            이전 페이지
-          </button>
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === pages.length - 1}
-          >
-            다음 페이지
-          </button>
-        </div>
-        <button onClick={saveDocument}>저장</button>
-      </AC.ContractView>
-    </>
+    <AC.ContractView>
+      <AC.ContractPaper>
+        <AC.ContractPaperTextView ref={textViewRef}>
+          {pages[currentPage]?.map((content, index) => (
+            <React.Fragment key={index}>{content}</React.Fragment>
+          ))}
+        </AC.ContractPaperTextView>
+      </AC.ContractPaper>
+      <div>
+        <button onClick={handlePrevPage} disabled={currentPage === 0}>
+          이전 페이지
+        </button>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === pages.length - 1}
+        >
+          다음 페이지
+        </button>
+      </div>
+      <button onClick={saveDocument}>저장</button>
+    </AC.ContractView>
   );
 };
 

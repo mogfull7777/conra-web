@@ -127,17 +127,8 @@ function AdminContractTyping({
     if (htmlPage === "sign") {
       const canvas = canvasRef.current;
       if (canvas) {
-        const widthInRem = 15;
-        const heightInRem = 8;
-        const remToPx = 16; // 1rem = 16px 기본값
-
-        canvas.width = widthInRem * remToPx * 2;
-        canvas.height = heightInRem * remToPx * 2;
-        canvas.style.width = `${widthInRem}rem`;
-        canvas.style.height = `${heightInRem}rem`;
-
         const signContext = canvas.getContext("2d");
-        signContext.scale(2, 2);
+        signContext.scale(1, 1);
         signContext.lineCap = "round";
         signContext.strokeStyle = "black";
         signContext.lineWidth = 3;
@@ -199,36 +190,43 @@ function AdminContractTyping({
         <AC.ContractTyping>
           <form onSubmit={contractTitleSubmit}>
             <AC.ContentNameText>
-              <input
+              <AC.ContractInput
                 ref={contractTitle}
                 placeholder="계약서 제목을 입력해주세요."
+                style={{ width: "80%" }}
               />
             </AC.ContentNameText>
             <AC.ContractTitle>
               <AC.ContractContentText>
                 <AC.ContractContentInputSec>
-                  <AC.ContractContentInput
+                  <AC.ContractInput
                     ref={contractClientName}
                     placeholder="발주처의 이름을 입력해주세요."
                     maxLength={20}
-                  ></AC.ContractContentInput>
-                  <span>(이하 "발주처라 함")과 </span>
+                  ></AC.ContractInput>
+                  <AC.ContractContentSpan>
+                    (이하 "발주처라 함")과
+                  </AC.ContractContentSpan>
                 </AC.ContractContentInputSec>
                 <AC.ContractContentInputSec>
-                  <AC.ContractContentInput
+                  <AC.ContractInput
                     ref={contractAdminName}
                     placeholder="수주처의 이름을 입력해주세요."
                     maxLength={20}
                   />
-                  <span>(이하 "수주처"라 함)은</span>
+                  <AC.ContractContentSpan>
+                    (이하 "수주처"라 함)은
+                  </AC.ContractContentSpan>
                 </AC.ContractContentInputSec>
                 <AC.ContractContentInputSec>
-                  <AC.ContractContentInput
+                  <AC.ContractInput
                     ref={contractContent}
                     placeholder="계약 제목을 입력해주세요."
                     maxLength={50}
                   />
-                  <span>와 관련한 계약을 다름과 같이 체결한다.</span>
+                  <AC.ContractContentSpan>
+                    와 관련한 계약을 다름과 같이 체결한다.
+                  </AC.ContractContentSpan>
                 </AC.ContractContentInputSec>
               </AC.ContractContentText>
             </AC.ContractTitle>
@@ -241,9 +239,10 @@ function AdminContractTyping({
         <AC.ContractTyping>
           <form onSubmit={contractContentSubmit}>
             <AC.ContractContent>
-              <AC.ContractContentTitle
+              <AC.ContractInput
                 ref={contractName}
                 placeholder="항목 이름"
+                style={{ width: "90%" }}
               />
               <AC.ContractContentTextarea
                 ref={contractDescription}
@@ -261,12 +260,14 @@ function AdminContractTyping({
         <AC.ContractTyping>
           <form onSubmit={contractSignSubmit}>
             <AC.ContractContent>
-              <h4>서명을 입력해 주세요.</h4>
-              <AC.ContractSignInput placeholder="회사명" ref={adminCompany} />
-              <AC.ContractSignInput placeholder="주소" ref={adminAdrass} />
-              <AC.ContractSignInput placeholder="대표자" ref={adminCEO} />
-              <AC.ContractSignInput placeholder="연락처" ref={adminPhone} />
-              <AC.ContractSignInput
+              <h4 style={{ marginBottom: "1.5rem", marginLeft: "0.5rem" }}>
+                서명을 입력해 주세요.
+              </h4>
+              <AC.ContractInput placeholder="회사명" ref={adminCompany} />
+              <AC.ContractInput placeholder="주소" ref={adminAdrass} />
+              <AC.ContractInput placeholder="대표자" ref={adminCEO} />
+              <AC.ContractInput placeholder="연락처" ref={adminPhone} />
+              <AC.ContractInput
                 placeholder="계좌번호"
                 ref={adminAccountNumber}
               />
@@ -275,17 +276,13 @@ function AdminContractTyping({
                 onMouseUp={finishDrawing}
                 onMouseMove={drawing}
                 ref={canvasRef}
-                style={{
-                  width: "15rem",
-                  height: "8rem",
-                }}
               />
             </AC.ContractContent>
             <AC.ContractTypingBtn type="submit">서명 추가</AC.ContractTypingBtn>
+            <AC.ContractTypingBtn onClick={clearCanvas}>
+              서명 지우기
+            </AC.ContractTypingBtn>
           </form>
-          <AC.ContractTypingBtn onClick={clearCanvas}>
-            서명 지우기
-          </AC.ContractTypingBtn>
         </AC.ContractTyping>
       );
     } else {
