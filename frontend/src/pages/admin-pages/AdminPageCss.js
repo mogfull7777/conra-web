@@ -245,6 +245,15 @@ export const ContractTypingBtn = styled.button`
 
 // AdminContractView.js css
 
+// 1. CRUD 버튼 수정 (hover기능으로 마우스 올리면 z-index로 나오게 구동되게.)
+// 2. 이전 페이지 등 View 쪽 버튼 수정
+
+// 기술적 수정
+
+// 1. 새로고침 관련
+// 2. 내용을 다 입력하지 않으면 내용 추가 요청 alart
+// 3. 수정창 alart -> 팝업으로 수정.
+
 export const ContractView = styled.section`
   width: 100%;
   height: 100vh; // 전체 뷰포트 높이 사용
@@ -259,13 +268,13 @@ export const ContractView = styled.section`
 
 export const ContractPaper = styled.article`
   width: 85%;
-  height: 85%; /* 화면 비율 유지 */
+  aspect-ratio: 1 / 1.414; // A4 비율 1:1.414 (210mm x 297mm)
   max-width: 210mm;
-  max-height: 297mm; /* A4 사이즈 최대 높이 */
+  max-height: 297mm;
   background-color: #ffffff;
-  padding: 5%; /* 패딩 조정 */
+  padding: 5%;
   box-sizing: border-box;
-  overflow: hidden; // 스크롤 방지
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 `;
@@ -298,6 +307,10 @@ export const ContractPaperSubTitle = styled.h4`
   // background-color: #999;
 `;
 
+export const ContentPaperTextPosition = styled.div`
+  word-break: keep-all;
+`;
+
 export const ContractPaperContractTitle = styled.span`
   font-weight: bold;
   font-size: calc(0.05rem + 0.6vw);
@@ -308,25 +321,77 @@ export const ContractPaperContractTitle = styled.span`
 
 export const ContractPaperContractList = styled.li`
   list-style: none;
+  position: relative;
 `;
 
 export const ContractPaperContractContext = styled.p`
   font-weight: normal;
   font-size: calc(0.05rem + 0.5vw);
   margin-bottom: calc(0.05rem + 0.4vw);
-  // background-color: #999;
 `;
 
 export const ContractPaperText = styled.p`
   font-weight: normal;
   font-size: calc(0.05rem + 0.5vw);
   margin-bottom: calc(0.05rem + 0.5vw);
-  // background-color: #999;
 `;
 
 export const ContractSignImg = styled.img`
   width: 15rem;
   height: 8rem;
+`;
+
+export const ContractCRUD = styled.div`
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  opacity: 0;
+  display: flex;
+  justify-content: flex-end;
+  transition: all 0.4s;
+  &:hover {
+    opacity: 1;
+    background: rgba(255, 172, 172, 0.3);
+  }
+`;
+
+export const ContractCRUDBtn = styled.button`
+  box-sizing: border-box;
+  border: none;
+  color: #353535;
+  cursor: pointer;
+  transition: all 0.4s;
+  font-weight: bold;
+  margin-right: 1%;
+  &:hover {
+    color: #ffffff;
+    background-color: #353535;
+    box-shadow: 0px 0px 0px 0.025rem #353535;
+  }
+`;
+
+export const ContractPageBtnBox = styled.div`
+  margin-top: 0.5rem;
+`;
+
+export const ContractPageBtn = styled.button`
+  box-sizing: border-box;
+  border: none;
+  color: #353535;
+  cursor: pointer;
+  transition: all 0.4s;
+  font-weight: bold;
+  margin-right: 1rem;
+  padding: 0.4rem;
+  &:hover {
+    color: #ffffff;
+    background-color: #353535;
+    box-shadow: 0px 0px 0px 0.025rem #353535;
+  }
 `;
 
 // AdminContractCheck.js css

@@ -4,7 +4,7 @@ import * as AC from "./AdminPageCss";
 import axios from "axios";
 import { useUser } from "../../UserContext";
 
-// 요소의 높이를 측정하는 헬퍼 함수
+// 임시로 DOM 요소를 생성하여 해당 요소의 높이를 측정하는 헬퍼 함수
 const measureElementHeight = async (element, containerWidth) => {
   return new Promise((resolve) => {
     const tempDiv = document.createElement("div");
@@ -26,6 +26,7 @@ const measureElementHeight = async (element, containerWidth) => {
 };
 
 const AdminContractView = ({
+  // 상태 관리 부분
   contractMainTitle,
   contractText,
   contractSign,
@@ -34,14 +35,14 @@ const AdminContractView = ({
   updateSign,
 }) => {
   const { setContractMainTitle, setContractText, setContractSign } = useUser();
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pages, setPages] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0); // 현재 페이지 상태
+  const [pages, setPages] = useState([]); // 페이지 목록 상태
   const [containerDimensions, setContainerDimensions] = useState({
     width: 0,
     height: 0,
-  });
+  }); // 컨테이너 크기 상태
 
-  const textViewRef = useRef(null);
+  const textViewRef = useRef(null); // 텍스트 뷰 레퍼런스
 
   // 리사이즈 핸들러 함수
   const handleResize = useCallback(() => {
@@ -55,20 +56,20 @@ const AdminContractView = ({
   useEffect(() => {
     const currentRef = textViewRef.current;
     const resizeObserver = new ResizeObserver(() => {
-      const dimensions = handleResize();
-      setContainerDimensions(dimensions);
+      const dimensions = handleResize(); // 크기 측정
+      setContainerDimensions(dimensions); // 크기 상태 업데이트
     });
 
     if (currentRef) {
-      resizeObserver.observe(currentRef);
+      resizeObserver.observe(currentRef); // 크기 변화 관찰
     }
 
-    const dimensions = handleResize();
-    setContainerDimensions(dimensions);
+    const dimensions = handleResize(); // 초기 크기 측정
+    setContainerDimensions(dimensions); // 초기 크기 상태 설정
 
     return () => {
       if (currentRef) {
-        resizeObserver.unobserve(currentRef);
+        resizeObserver.unobserve(currentRef); // 컴포넌트 언마운트 시 관찰 중지
       }
     };
   }, [handleResize]);
@@ -76,11 +77,11 @@ const AdminContractView = ({
   const handleEdit = useCallback(
     (index) => {
       const item = contractText[index];
-      const newName = prompt("수정할 항목의 제목을 입력하세요", item.name);
+      const newName = prompt("수정할 항목의 제목을 입력하세요", item.name); // 항목 제목 수정
       const newDescription = prompt(
         "수정할 내용을 입력하세요",
         item.description
-      );
+      ); // 항목 내용 수정
       if (newName !== null && newDescription !== null) {
         const updatedText = [...contractText];
         updatedText[index] = {
@@ -88,8 +89,8 @@ const AdminContractView = ({
           name: newName,
           description: newDescription,
         };
-        setContractText(updatedText);
-        updateContent(updatedText);
+        setContractText(updatedText); // 수정된 내용 상태 업데이트
+        updateContent(updatedText); // 수정된 내용 부모 컴포넌트로 전달
       }
     },
     [contractText, updateContent, setContractText]
@@ -97,13 +98,14 @@ const AdminContractView = ({
 
   const handleDelete = useCallback(
     (index) => {
-      const updatedText = contractText.filter((_, i) => i !== index);
-      setContractText(updatedText);
-      updateContent(updatedText);
+      const updatedText = contractText.filter((_, i) => i !== index); // 항목 삭제
+      setContractText(updatedText); // 삭제된 내용 상태 업데이트
+      updateContent(updatedText); // 삭제된 내용 부모 컴포넌드로 전달
     },
     [contractText, updateContent, setContractText]
   );
 
+  // 페이지 분리
   useEffect(() => {
     const splitPages = async () => {
       if (!textViewRef.current) return;
@@ -159,22 +161,31 @@ const AdminContractView = ({
           currentHeight = 0;
         }
 
-        currentPageContent.push(titleElement);
+        currentPageContent.push(titleElement); // 제목 요소 추가
         currentHeight += titleHeight;
       }
 
       for (const [index, item] of contractText.entries()) {
+        // 계약서 항목 추가
         const contentElement = (
           <AC.ContractPaperContractList key={index}>
-            <AC.ContractPaperContractContext>
-              [ 제 {index + 1} 조 ]
-              <AC.ContractPaperContractTitle>
-                {item.name}
-              </AC.ContractPaperContractTitle>
-            </AC.ContractPaperContractContext>
-            <AC.ContractPaperText>{item.description}</AC.ContractPaperText>
-            <button onClick={() => handleEdit(index)}>수정</button>
-            <button onClick={() => handleDelete(index)}>삭제</button>
+            <AC.ContentPaperTextPosition>
+              <AC.ContractPaperContractContext>
+                [ 제 {index + 1} 조 ]
+                <AC.ContractPaperContractTitle>
+                  {item.name}
+                </AC.ContractPaperContractTitle>
+              </AC.ContractPaperContractContext>
+              <AC.ContractPaperText>{item.description}</AC.ContractPaperText>
+            </AC.ContentPaperTextPosition>
+            <AC.ContractCRUD>
+              <AC.ContractCRUDBtn onClick={() => handleEdit(index)}>
+                수정
+              </AC.ContractCRUDBtn>
+              <AC.ContractCRUDBtn onClick={() => handleDelete(index)}>
+                삭제
+              </AC.ContractCRUDBtn>
+            </AC.ContractCRUD>
           </AC.ContractPaperContractList>
         );
 
@@ -186,11 +197,12 @@ const AdminContractView = ({
           currentHeight = 0;
         }
 
-        currentPageContent.push(contentElement);
+        currentPageContent.push(contentElement); // 항목 요소 추가
         currentHeight += contentHeight;
       }
 
       if (contractSign.company) {
+        // 계약서 서명 추가
         const signElement = (
           <ul>
             <AC.ContractPaperContractList>
@@ -219,15 +231,15 @@ const AdminContractView = ({
           currentHeight = 0;
         }
 
-        currentPageContent.push(signElement);
+        currentPageContent.push(signElement); // 서명 요소 추가
         currentHeight += signHeight;
       }
 
       if (currentPageContent.length > 0) {
-        pageContent.push([...currentPageContent]);
+        pageContent.push([...currentPageContent]); // 마지막 페이지 추가
       }
 
-      setPages(pageContent);
+      setPages(pageContent); // 페이지 상태 업데이트
     };
 
     splitPages();
@@ -241,13 +253,14 @@ const AdminContractView = ({
   ]);
 
   const handlePrevPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 0));
+    setCurrentPage((prev) => Math.max(prev - 1, 0)); // 이전 페이지로 이동
   };
 
   const handleNextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, pages.length - 1));
+    setCurrentPage((prev) => Math.min(prev + 1, pages.length - 1)); // 다음 페이지로 이동
   };
 
+  // 문서 내용 유저데이터로 전달 및 저장
   const saveDocument = async () => {
     try {
       const response = await axios.post(
@@ -289,18 +302,21 @@ const AdminContractView = ({
           ))}
         </AC.ContractPaperTextView>
       </AC.ContractPaper>
-      <div>
-        <button onClick={handlePrevPage} disabled={currentPage === 0}>
+      <AC.ContractPageBtnBox>
+        <AC.ContractPageBtn
+          onClick={handlePrevPage}
+          disabled={currentPage === 0}
+        >
           이전 페이지
-        </button>
-        <button
+        </AC.ContractPageBtn>
+        <AC.ContractPageBtn onClick={saveDocument}>저장</AC.ContractPageBtn>
+        <AC.ContractPageBtn
           onClick={handleNextPage}
           disabled={currentPage === pages.length - 1}
         >
           다음 페이지
-        </button>
-      </div>
-      <button onClick={saveDocument}>저장</button>
+        </AC.ContractPageBtn>
+      </AC.ContractPageBtnBox>
     </AC.ContractView>
   );
 };

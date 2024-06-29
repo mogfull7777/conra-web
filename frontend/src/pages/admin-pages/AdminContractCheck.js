@@ -75,38 +75,35 @@ function PDF({ contractMainTitle, contractText, contractSign }) {
   const contractPage = useRef("");
 
   return (
-    <>
-      <Document>
-        <Page size="A4" style={styles.page} ref={contractPage}>
-          <View style={styles.section}>
-            <Text>계약서 내용</Text>
-            <Text style={styles.preview}>{contractMainTitle.title}</Text>
-            <Text style={styles.preview}>
-              {contractMainTitle.clientName}(이하 "발주처라 함")과
-              {contractMainTitle.adminName}(이하 "수주처"라 함)은
-              {contractMainTitle.content}와 관련한 계약을 다름과 같이 체결한다.
-            </Text>
-            {contractText.map((item, index) => (
-              <>
-                <Text style={styles.title}>
-                  <Text style={styles.titleNum}>[ 제 {index + 1} 조 ]</Text>
-                  {item.name}
-                </Text>
-                <Text style={styles.preview}>{item.description}</Text>
-              </>
-            ))}
-            <Text style={styles.preview}>{contractSign.company}</Text>
-            <Text style={styles.preview}>{contractSign.adrass}</Text>
-            <Text style={styles.preview}>{contractSign.CEO}</Text>
-            <Text style={styles.preview}>{contractSign.phone}</Text>
-            <Text style={styles.preview}>{contractSign.accountNumber}</Text>
-            {contractSign.dataUrl && (
-              <Image src={contractSign.dataUrl} alt="signature" />
-            )}
-          </View>
-        </Page>
-      </Document>
-    </>
+    <Document>
+      <Page size="A4" style={styles.page} ref={contractPage}>
+        <View style={styles.section}>
+          <Text style={styles.preview}>{contractMainTitle.title}</Text>
+          <Text style={styles.preview}>
+            {contractMainTitle.clientName}(이하 "발주처라 함")과
+            {contractMainTitle.adminName}(이하 "수주처"라 함)은
+            {contractMainTitle.content}와 관련한 계약을 다름과 같이 체결한다.
+          </Text>
+          {contractText.map((item, index) => (
+            <>
+              <Text style={styles.title}>
+                <Text style={styles.titleNum}>[ 제 {index + 1} 조 ]</Text>
+                {item.name}
+              </Text>
+              <Text style={styles.preview}>{item.description}</Text>
+            </>
+          ))}
+          <Text style={styles.preview}>{contractSign.company}</Text>
+          <Text style={styles.preview}>{contractSign.adrass}</Text>
+          <Text style={styles.preview}>{contractSign.CEO}</Text>
+          <Text style={styles.preview}>{contractSign.phone}</Text>
+          <Text style={styles.preview}>{contractSign.accountNumber}</Text>
+          {contractSign.dataUrl && (
+            <Image src={contractSign.dataUrl} alt="signature" />
+          )}
+        </View>
+      </Page>
+    </Document>
   );
 }
 
@@ -157,16 +154,12 @@ const AdminContractCheck = ({
     <AC.ContractView>
       <PDFViewer
         style={{
-          width: "85%",
-          maxWidth: "210mm",
-          aspectRatio: "210 / 297",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          padding: "9%",
+          width: "80%",
+          aspectRatio: "1 / 1.5", // A4 비율 1:1.414 (210mm x 297mm)
           boxSizing: "border-box",
           overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <PDF
@@ -176,7 +169,12 @@ const AdminContractCheck = ({
           contractSign={contractSign}
         />
       </PDFViewer>
-      <button onClick={saveDocument}>저장</button>
+      <AC.ContractPageBtn
+        onClick={saveDocument}
+        style={{ marginTop: "0.5rem" }}
+      >
+        저장
+      </AC.ContractPageBtn>
     </AC.ContractView>
   );
 };

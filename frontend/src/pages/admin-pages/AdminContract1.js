@@ -180,13 +180,6 @@ function AdminContract1() {
 
 export default AdminContract1;
 
-// need
-// 1. 레이아웃 나누기 ---> grid를 써볼까요? V
-// 2. 제 1 항 상위 부터 자동으로 카운트 적히게 V
-// 3. 항목 추가한 걸 카운트 할 수 있게. V
-// 4. 싸인 관련 설계하기.
-// 5. jsPDF ===> react-pdf로 변경
-
 // essue
 // newContractText => 따로 컴포넌트를 만들어서 css 기깔나게 입힐까?
 // 1. react-pdf 한글깨짐 문제 해결.  V ===> 폰트 ttf 등록

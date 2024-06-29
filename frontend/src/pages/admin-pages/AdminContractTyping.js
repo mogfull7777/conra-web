@@ -131,7 +131,7 @@ function AdminContractTyping({
         signContext.scale(1, 1);
         signContext.lineCap = "round";
         signContext.strokeStyle = "black";
-        signContext.lineWidth = 3;
+        signContext.lineWidth = 2;
 
         signRef.current = signContext;
       } else {
