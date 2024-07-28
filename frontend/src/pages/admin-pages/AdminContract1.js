@@ -3,7 +3,7 @@ import { useUser } from "../../UserContext";
 import Cookies from "js-cookie";
 import * as AC from "./AdminPageCss";
 import axios from "axios";
-import { Outlet, Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes, useParams } from "react-router-dom";
 import AdminContractNav from "./AdminContractNav";
 import AdminContractTyping from "./AdminContractTyping";
 import AdminContractView from "./AdminContractView";
@@ -40,6 +40,42 @@ function AdminContract1() {
   const [contractSign, setContractSign] = useState({});
   // typing 디스플레이를 바꾸는 state
   const [htmlPage, setHtmlPage] = useState("title");
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (id === "new") {
+      // 새로운 계약서 작성
+      setContractMainTitle({});
+      setContractText([]);
+      setContractSign({});
+    } else {
+      const fetchDocument = async () => {
+        if (id) {
+          try {
+            const response = await axios.get(
+              `http://localhost:5000/api/users/documents/${id}`,
+              {
+                withCredentials: true,
+              }
+            );
+            if (response.status === 200) {
+              const document = response.data.document;
+              setContractMainTitle(document.title);
+              setContractText(document.content);
+              setContractSign(document.sign);
+              console.log("Document loaded:", document); // 데이터 로드 확인용 콘솔 로그
+            } else {
+              console.error("문서 정보를 가져오는데 실패했습니다.", response);
+            }
+          } catch (err) {
+            console.error("문서 정보를 가져오는 중 오류가 발생했습니다.", err);
+          }
+        }
+      };
+
+      fetchDocument();
+    }
+  }, [id]);
 
   // ____토큰을 사용하여 유저 정보를 가져오고 저장.
   useEffect(() => {

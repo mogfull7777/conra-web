@@ -28,13 +28,13 @@ export const Typing = styled.main`
   width: 100%;
   height: auto;
   grid-area: typing;
+  grid-column: 2 / 4; /* 2번째 칸부터 4번째 칸 전까지 차지 */
   background-color: blue;
 `;
+
+// Page 컴포넌트도 필요합니다
 export const Page = styled.div`
-  width: 100%;
-  height: auto;
   grid-area: page;
-  background-color: gray;
 `;
 
 export const User = styled.div`

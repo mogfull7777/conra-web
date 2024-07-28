@@ -20,7 +20,8 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/admin" element={<AdminMain />} />
         <Route path="/client" element={<ClientMain />} />
-        <Route path="/admin/contract/*" element={<AdminContract1 />} />
+        <Route path="/admin/contract/new" element={<AdminContract1 />} />
+        <Route path="/admin/contract/:id" element={<AdminContract1 />} />
       </Routes>
     </UserProvider>
   );

@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import * as AC from "./AdminPageCss";
 import axios from "axios";
 import { useUser } from "../../UserContext";
+import { useNavigate } from "react-router-dom";
 
 // 임시로 DOM 요소를 생성하여 해당 요소의 높이를 측정하는 헬퍼 함수
 const measureElementHeight = async (element, containerWidth) => {
@@ -42,7 +43,17 @@ const AdminContractView = ({
     height: 0,
   }); // 컨테이너 크기 상태
 
+  console.log("Rendering AdminContractView with data:", {
+    contractMainTitle,
+    contractText,
+    contractSign,
+  });
+
   const textViewRef = useRef(null); // 텍스트 뷰 레퍼런스
+  const navi = useNavigate();
+  const saveHandle = () => {
+    navi("/admin");
+  };
 
   // 리사이즈 핸들러 함수
   const handleResize = useCallback(() => {
@@ -284,6 +295,8 @@ const AdminContractView = ({
         updateTitle({});
         updateContent([]);
         updateSign({});
+
+        saveHandle();
       } else {
         alert("문서 저장에 실패했습니다.");
       }

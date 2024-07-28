@@ -115,6 +115,50 @@ app.get("/api/users/auth", auth, (req, res) => {
   }
 });
 
+// ________메인목록에 문서 목록 불러오기
+// 유저의 문서 리스트를 가져오는 엔드포인트
+app.get("/api/users/documents", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("documents");
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "유저를 찾을 수 없습니다." });
+    }
+    res.status(200).json({ success: true, documents: user.documents });
+  } catch (err) {
+    console.error("문서 리스트를 가져오는데 실패했습니다:", err);
+    res.status(500).json({
+      success: false,
+      error: "문서 리스트를 가져오는데 실패했습니다.",
+    });
+  }
+});
+
+// 특정 문서를 가져오는 엔드포인트
+app.get("/api/users/documents/:id", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "유저를 찾을 수 없습니다." });
+    }
+    const document = user.documents.id(req.params.id);
+    if (!document) {
+      return res
+        .status(404)
+        .json({ success: false, message: "문서를 찾을 수 없습니다." });
+    }
+    res.status(200).json({ success: true, document });
+  } catch (err) {
+    console.error("문서를 가져오는데 실패했습니다:", err);
+    res
+      .status(500)
+      .json({ success: false, error: "문서를 가져오는데 실패했습니다." });
+  }
+});
+
 // ________문서 저장 시
 app.post("/api/users/saveContract", auth, async (req, res) => {
   // 저장하고자 하는 유저 검색.
